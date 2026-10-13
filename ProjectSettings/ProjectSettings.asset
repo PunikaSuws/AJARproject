@@ -4,7 +4,7 @@
 PlayerSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 29
-  productGUID: 4451f2a9893719444b4cd4a1ad1fc085
+  productGUID: 8d85d8cd609a8464198fa1f736e613a4
   AndroidProfiler: 0
   AndroidFilterTouchesWhenObscured: 0
   AndroidEnableSustainedPerformanceMode: 0
@@ -830,7 +830,7 @@ PlayerSettings:
   webWasm2023: 1
   webEnableSubmoduleStrippingCompatibility: 0
   scriptingDefineSymbols:
-    Standalone: SENTIS_ANALYTICS_ENABLED
+    Standalone: SENTIS_ANALYTICS_ENABLED;APP_UI_EDITOR_ONLY
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend:
@@ -930,10 +930,10 @@ PlayerSettings:
   activeInputHandler: 1
   windowsGamepadBackendHint: 0
   enableDirectStorage: 0
-  cloudProjectId: 1a5614e3-476a-44b8-be23-484714cf88dd
+  cloudProjectId: 7cd2186e-9050-4c4e-a318-ec4e4d2eb10d
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: My project 2026-10-13_13-41-04
+  projectName: My project 2026-10-13_14-17-59
   organizationId: punika400
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
