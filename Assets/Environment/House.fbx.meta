@@ -1,9 +1,124 @@
 fileFormatVersion: 2
-guid: f9ecb2c22bd43c54997786fbeb6f886e
+guid: 209bba4f4dffbbc42823741349a103ea
 ModelImporter:
   serializedVersion: 24501
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: CurtainSala01_normal
+    second: {fileID: 2800000, guid: 736ed3359da34ab46ae1e643f79f8f42, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: CurtainTO1_normal
+    second: {fileID: 2800000, guid: 05939d21074aae2498917f285308d75b, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: doorthai_baseColor
+    second: {fileID: 2800000, guid: da05fd813c319874aa5cb73e5ed9aca5, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: doorthai_normal
+    second: {fileID: 2800000, guid: eed726b0acb4cad44a6cb3ffcefadc16, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: earthenwarejar_baseColor
+    second: {fileID: 2800000, guid: bffe0cf0567e6a846b100d280f655af4, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: earthenwarejar_normal
+    second: {fileID: 2800000, guid: b9c7328c69b5f654bbde8cf847d1ac25, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: material_baseColor
+    second: {fileID: 2800000, guid: b3728368a78f95849ba5259ce1bbce94, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: thairoof_baseColor
+    second: {fileID: 2800000, guid: 56ab46413869ff248aa0b7d4c79c94fb, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: thairoof_normal
+    second: {fileID: 2800000, guid: d2aca74877b20f642b8b60006a147faf, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: thaiwall1_baseColor
+    second: {fileID: 2800000, guid: 5ebde0f256c2c6c41924023445fa90f4, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: thaiwall1_normal
+    second: {fileID: 2800000, guid: c7c2bd5d0f9599c4593cc52f340f2b61, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: thaiwall2_baseColor
+    second: {fileID: 2800000, guid: a565ec3c5ab2ba1449c7fa042578f520, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: thaiwall2_normal
+    second: {fileID: 2800000, guid: 30ee0a5695f663c449007af43a62f9b2, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: thaiwood2_baseColor
+    second: {fileID: 2800000, guid: 503064f5cfb8a424585319b3baab113f, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: thaiwood2_normal
+    second: {fileID: 2800000, guid: addd78e98be9b294da6f2dd2960ca04b, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: thaiwood_baseColor
+    second: {fileID: 2800000, guid: fc3fc53600c649742b522bb40005c2a5, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: thaiwood_normal
+    second: {fileID: 2800000, guid: 9b6f3e8ea63d10243acd1727168fb3e8, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: vocanobrick_baseColor
+    second: {fileID: 2800000, guid: 0d13f766cc19a584b85a6dc9be8ad21e, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: vocanobrick_normal
+    second: {fileID: 2800000, guid: ecdd47772bd355f4dbedff56fc8e937d, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: wallout_baseColor
+    second: {fileID: 2800000, guid: 0029283797cc99f46906edaf960356c7, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: wallout_normal
+    second: {fileID: 2800000, guid: a57e8e9590043c141aaee2cfee3f3d88, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: windowT_baseColor
+    second: {fileID: 2800000, guid: 52c6c277dec4ab442ba6752ed1916f24, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: windowT_normal
+    second: {fileID: 2800000, guid: 73ab18b58d930f244afdbf75c1d7ae25, type: 3}
   materials:
     materialImportMode: 2
     materialName: 0
