@@ -5,6 +5,16 @@ ModelImporter:
   internalIDToNameTable: []
   externalObjects:
   - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: ground1.001
+    second: {fileID: 2100000, guid: 67a0a3c0b6cf0a34cb1693cb1bce9363, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: ground2.001
+    second: {fileID: 2100000, guid: 5c6a1a345a1522a44be619e387d78381, type: 2}
+  - first:
       type: UnityEngine:Texture2D
       assembly: UnityEngine.CoreModule
       name: ground1_baseColor
