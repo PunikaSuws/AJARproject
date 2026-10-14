@@ -1,5 +1,3 @@
-Installation for Gaia
----------------------
-Move the content of the Heightmaps folder into a sub-folder of “Gaia User Data/Stamps”, eg: "Gaia User Data/Stamps/Rowlan"
-
-The stamps will then be selectable in Gaia's stamp browser.
+version https://git-lfs.github.com/spec/v1
+oid sha256:e19912360b4cfc176ad2628ecf1cbf6cb72f5826b626dcba55a014cadc1b9edd
+size 235
