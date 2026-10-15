@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: c7959f0d7acaea54e908b8989dcd6675
+guid: e06640504f83c4946a034dab387b838c
 ModelImporter:
   serializedVersion: 24501
   internalIDToNameTable: []
@@ -7,53 +7,8 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: M_bark_hair_inst
-    second: {fileID: 2100000, guid: 5880f2c149c88ac42bcb720868eb73b1, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: M_bark_hair_inst.1
-    second: {fileID: 2100000, guid: 869506a4be0646d46918f3f12dd1660f, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: M_frond_01_inst
-    second: {fileID: 2100000, guid: 6264a898b9a7c114b825b72509f7e674, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: M_frond_01_inst.1
-    second: {fileID: 2100000, guid: 668e0c8f3e10f6e44893785a6ecf592b, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: M_frond_02_inst_Inst
-    second: {fileID: 2100000, guid: 7b2d804b24c9546459571fb459febd21, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: M_frond_03_inst_Inst1
-    second: {fileID: 2100000, guid: 3198c24c5b4478041beb00e7faa0f45e, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: M_palm_bark_01
-    second: {fileID: 2100000, guid: 1340666188bcd414abe9d73292621621, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: M_palm_bark_01.1
-    second: {fileID: 2100000, guid: 044bb63e57f7c0b418eb9b55158a3228, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: M_palm_bark_02
-    second: {fileID: 2100000, guid: 8c2b01a90bbca974a8dc0fdfd5385c3c, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: M_palm_bark_02.1
-    second: {fileID: 2100000, guid: 73a4c6183e65afc45b446ed0ca9db16f, type: 2}
+      name: material0.001
+    second: {fileID: 2100000, guid: 10b1049a00108a34da129cb647569036, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
