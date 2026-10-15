@@ -1120,7 +1120,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: efd052df057888c42b9ce93c0c19bd62, type: 3}
       propertyPath: m_Name
-      value: vintage_low_table_0224080047_texture
+      value: "\u0E41\u0E04\u0E23\u0E48"
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1354,15 +1354,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 9fd315a6b3ed37a4790d9578636eac4a, type: 3}
       propertyPath: m_LocalScale.x
-      value: 4.5269
+      value: 7.71
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 9fd315a6b3ed37a4790d9578636eac4a, type: 3}
       propertyPath: m_LocalScale.y
-      value: 4.5269
+      value: 7.77
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 9fd315a6b3ed37a4790d9578636eac4a, type: 3}
       propertyPath: m_LocalScale.z
-      value: 4.5269
+      value: 0.26
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 9fd315a6b3ed37a4790d9578636eac4a, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2255,7 +2255,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 03730c77f763d0142842e8cd023e8459, type: 3}
       propertyPath: m_Name
-      value: 220929_Thai Triangle Pillow
+      value: "\u0E2B\u0E21\u0E2D\u0E19\u0E2A\u0E32\u0E21\u0E40\u0E2B\u0E25\u0E35\u0E48\u0E22\u0E21"
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
