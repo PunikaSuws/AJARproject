@@ -12,6 +12,7 @@ public class IngSearchController : MonoBehaviour
     [SerializeField] private NavMeshAgent agent;
     [SerializeField] private DialogueUI dialogueUI;
     [SerializeField] private NpcDialogue npcDialogue;
+    [SerializeField] private Animator eyeAnimator;
 
     [Header("Search Settings")]
     [SerializeField, Min(0f)] private float countDuration = 10f;
@@ -20,13 +21,17 @@ public class IngSearchController : MonoBehaviour
     [SerializeField, Range(0f, 180f)] private float playerFacingAngle = 50f;
     [SerializeField, Min(0f)] private float playerSeekerDialogueDelay = 3f;
     [SerializeField, Min(0.1f)] private float playerTrackingTurnSpeed = 540f;
+    [SerializeField, Min(0.1f)] private float departureDistance = 15f;
 
     private static readonly int Dialogue1Finished = Animator.StringToHash("IsDialogue1Finished");
+    private static readonly int Dialogue2Finished = Animator.StringToHash("IsDialogue2Finished");
+    private static readonly int SeekDialogueFinished = Animator.StringToHash("SeekDialogueFinished");
     private static readonly int Seek = Animator.StringToHash("IsSeek");
     private static readonly int Find = Animator.StringToHash("IsFind");
     private static readonly int CountState = Animator.StringToHash("Base Layer.Count");
     private static readonly int IdleState = Animator.StringToHash("Base Layer.Idle");
     private static readonly int WalkState = Animator.StringToHash("Base Layer.Walk");
+    private static readonly int EyeAnimationShortName = Animator.StringToHash("JanEye");
     private static readonly int IdleShortName = Animator.StringToHash("Idle");
 
     private Coroutine sequence;
@@ -35,6 +40,7 @@ public class IngSearchController : MonoBehaviour
     private bool hasFoundPlayer;
     private bool hasCompletedFoundDialogue;
     private bool hasStartedPlayerSeekerDialogue;
+    private bool isLeaving;
 
     private void Awake()
     {
@@ -52,6 +58,9 @@ public class IngSearchController : MonoBehaviour
 
         if (animator != null && ingAnimatorController != null)
             animator.runtimeAnimatorController = ingAnimatorController;
+
+        if (eyeAnimator != null)
+            eyeAnimator.gameObject.SetActive(false);
 
         if (npcDialogue == null)
             npcDialogue = GetComponent<NpcDialogue>();
@@ -102,7 +111,7 @@ public class IngSearchController : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (!hasFoundPlayer || player == null)
+        if (!hasFoundPlayer || isLeaving || player == null)
             return;
 
         Vector3 direction = player.position - transform.position;
@@ -122,9 +131,22 @@ public class IngSearchController : MonoBehaviour
         if (dialogue != npcDialogue)
             return;
 
+        if (stage == NpcConversationStage.PlayerSeeker)
+        {
+            if (!hasFoundPlayer || !hasStartedPlayerSeekerDialogue)
+            {
+                Debug.LogError($"{name}: Seek dialogue completed before Ing found the player.", this);
+                return;
+            }
+
+            sequence = StartCoroutine(PlayEyeAndLeave());
+            return;
+        }
+
         if (stage == NpcConversationStage.Found)
         {
             hasCompletedFoundDialogue = true;
+            StartPlayerSeekerDialogue();
             return;
         }
 
@@ -162,6 +184,12 @@ public class IngSearchController : MonoBehaviour
         if (dialogueUI == null)
         {
             Debug.LogError($"{name}: Assign DialogueCanvas's DialogueUI to IngSearchController.", this);
+            valid = false;
+        }
+
+        if (eyeAnimator == null)
+        {
+            Debug.LogError($"{name}: Assign the Eye Animator for the Seek dialogue's eye animation.", this);
             valid = false;
         }
 
@@ -303,6 +331,14 @@ public class IngSearchController : MonoBehaviour
         if (controller != hideController || !hasFoundPlayer || hasStartedPlayerSeekerDialogue)
             return;
 
+        StartPlayerSeekerDialogue();
+    }
+
+    private void StartPlayerSeekerDialogue()
+    {
+        if (!hasFoundPlayer || hasStartedPlayerSeekerDialogue)
+            return;
+
         hasStartedPlayerSeekerDialogue = true;
         sequence = StartCoroutine(TurnAndStartPlayerSeekerDialogue());
     }
@@ -348,6 +384,113 @@ public class IngSearchController : MonoBehaviour
         return Vector3.Angle(playerForward, directionToIng) <= playerFacingAngle;
     }
 
+    private IEnumerator PlayEyeAndLeave()
+    {
+        if (eyeAnimator == null)
+        {
+            Debug.LogError($"{name}: Eye Animator is missing; cannot play the Seek dialogue eye animation.", this);
+        }
+        else if (eyeAnimator.runtimeAnimatorController == null)
+        {
+            Debug.LogError($"{name}: Eye Animator has no Runtime Animator Controller.", eyeAnimator);
+        }
+        else
+        {
+            eyeAnimator.gameObject.SetActive(true);
+            SetAnimatorSignal(eyeAnimator, SeekDialogueFinished, true);
+            eyeAnimator.Play("JanEye", 0, 0f);
+            yield return null;
+
+            if (eyeAnimator.GetCurrentAnimatorStateInfo(0).shortNameHash != EyeAnimationShortName)
+            {
+                Debug.LogError($"{name}: Eye Animator did not enter the JanEye state.", eyeAnimator);
+                eyeAnimator.gameObject.SetActive(false);
+            }
+        }
+
+        if (player == null || agent == null || !agent.enabled || !agent.isOnNavMesh)
+        {
+            Debug.LogError($"{name}: Cannot make Ing leave because the player or NavMeshAgent is unavailable.", this);
+            sequence = null;
+            yield break;
+        }
+
+        FirstPersonLook playerLook = player.GetComponentInChildren<FirstPersonLook>();
+        Vector3 sideDirection = playerLook != null
+            ? Vector3.ProjectOnPlane(playerLook.transform.right, Vector3.up).normalized
+            : Vector3.zero;
+        Vector3 directionToPlayer = Vector3.ProjectOnPlane(player.position - transform.position, Vector3.up);
+        if (sideDirection.sqrMagnitude < 0.0001f && directionToPlayer.sqrMagnitude > 0.0001f)
+            sideDirection = Vector3.Cross(Vector3.up, directionToPlayer.normalized);
+
+        if (sideDirection.sqrMagnitude < 0.0001f ||
+            !TryGetDepartureDestination(sideDirection, out Vector3 destination))
+        {
+            Debug.LogError($"{name}: Could not find a NavMesh path for Ing to leave the player's view.", this);
+            sequence = null;
+            yield break;
+        }
+
+        isLeaving = true;
+        agent.updateRotation = true;
+        agent.isStopped = false;
+        SetAnimatorSignal(Seek, true);
+        SetAnimatorSignal(Dialogue2Finished, true);
+        animator.Play(WalkState, 0, 0f);
+
+        if (!agent.SetDestination(destination))
+        {
+            Debug.LogError($"{name}: Ing's NavMeshAgent could not set a path out of the player's view.", this);
+            sequence = null;
+            yield break;
+        }
+
+        while (agent.pathPending)
+            yield return null;
+
+        if (agent.pathStatus != NavMeshPathStatus.PathComplete)
+        {
+            Debug.LogError($"{name}: Ing's departure path is incomplete.", this);
+            sequence = null;
+            yield break;
+        }
+
+        while (agent.hasPath &&
+               agent.remainingDistance > Mathf.Max(agent.stoppingDistance, 0.1f))
+            yield return null;
+
+        agent.isStopped = true;
+        agent.ResetPath();
+        SetAnimatorSignal(Seek, false);
+        animator.Play(IdleState, 0, 0f);
+        sequence = null;
+        Destroy(gameObject);
+    }
+
+    private bool TryGetDepartureDestination(Vector3 sideDirection, out Vector3 destination)
+    {
+        destination = default;
+        NavMeshPath path = new NavMeshPath();
+        float sampleRadius = Mathf.Max(2f, departureDistance * 0.5f);
+
+        for (int side = 0; side < 2; side++)
+        {
+            Vector3 direction = side == 0 ? sideDirection : -sideDirection;
+            Vector3 candidate = transform.position + direction * departureDistance;
+            if (!NavMesh.SamplePosition(candidate, out NavMeshHit hit, sampleRadius, agent.areaMask))
+                continue;
+
+            if (agent.CalculatePath(hit.position, path) &&
+                path.status == NavMeshPathStatus.PathComplete)
+            {
+                destination = hit.position;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private bool HasReachedPlayer()
     {
         Vector3 p = player.position, i = transform.position;
@@ -357,38 +500,30 @@ public class IngSearchController : MonoBehaviour
 
     private void SetAnimatorSignal(int parameterHash, bool value)
     {
-        foreach (AnimatorControllerParameter parameter in animator.parameters)
+        SetAnimatorSignal(animator, parameterHash, value);
+    }
+
+    private static void SetAnimatorSignal(Animator targetAnimator, int parameterHash, bool value)
+    {
+        if (targetAnimator == null)
+            return;
+
+        foreach (AnimatorControllerParameter parameter in targetAnimator.parameters)
         {
             if (parameter.nameHash != parameterHash)
                 continue;
 
             if (parameter.type == AnimatorControllerParameterType.Bool)
-                animator.SetBool(parameterHash, value);
+                targetAnimator.SetBool(parameterHash, value);
             else if (parameter.type == AnimatorControllerParameterType.Trigger)
             {
                 if (value)
-                    animator.SetTrigger(parameterHash);
+                    targetAnimator.SetTrigger(parameterHash);
                 else
-                    animator.ResetTrigger(parameterHash);
+                    targetAnimator.ResetTrigger(parameterHash);
             }
 
             return;
         }
-    }
-    private float nextLog;
-
-    private void Update()
-    {
-        if (!hasStartedSearching || agent == null || player == null || Time.time < nextLog) return;
-        nextLog = Time.time + 0.5f;
-
-        var st = animator.GetCurrentAnimatorStateInfo(0);
-        string stateName = st.IsName("Walk") ? "Walk" : st.IsName("Count") ? "Count" : "Idle/other";
-
-        Debug.Log($"[Ing] onNavMesh={agent.isOnNavMesh} stopped={agent.isStopped} speed={agent.speed} " +
-                  $"vel={agent.velocity.magnitude:F2} hasPath={agent.hasPath} pending={agent.pathPending} " +
-                  $"status={agent.pathStatus} remain={agent.remainingDistance:F2} " +
-                  $"distToPlayer={Vector3.Distance(transform.position, player.position):F2} " +
-                  $"state={stateName} IsSeek={animator.GetBool(Seek)}");
     }
 }
