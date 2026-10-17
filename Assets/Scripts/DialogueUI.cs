@@ -71,6 +71,11 @@ public class DialogueUI : MonoBehaviour
         }
     }
 
+    void LateUpdate()
+    {
+        if (dialogueOpen && playerRoot != null)
+            playerRoot.rotation = lockedRotation;
+    }
     void OnDestroy()
     {
         if (nextButton != null)
@@ -125,11 +130,16 @@ public class DialogueUI : MonoBehaviour
         {
             wasPlayerMovementEnabled = playerMovement.enabled;
             playerMovement.enabled = false;
-        }
-        void LateUpdate()
-        {
-            if (dialogueOpen && playerRoot != null)
-                playerRoot.rotation = lockedRotation;
+
+            playerRoot = playerMovement.transform;
+            lockedRotation = playerRoot.rotation;
+
+            Rigidbody rb = playerMovement.GetComponent<Rigidbody>();
+            if (rb != null)
+            {
+                rb.linearVelocity = Vector3.zero;
+                rb.angularVelocity = Vector3.zero;
+            }
         }
 
         Cursor.lockState = CursorLockMode.None;
@@ -208,11 +218,7 @@ public class DialogueUI : MonoBehaviour
             playerMovement.enabled = wasPlayerMovementEnabled;
             playerMovement = null;
         }
-        void LateUpdate()
-        {
-            if (dialogueOpen && playerRoot != null)
-                playerRoot.rotation = lockedRotation;
-        }
+        playerRoot = null;
 
         Cursor.lockState = previousCursorLockState;
         Cursor.visible = previousCursorVisibility;
