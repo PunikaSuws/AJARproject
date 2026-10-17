@@ -17,6 +17,9 @@ public class IngSearchController : MonoBehaviour
     [SerializeField, Min(0f)] private float countDuration = 10f;
     [SerializeField, Min(0.1f)] private float foundDistance = 1.5f;
     [SerializeField, Min(0.05f)] private float destinationRefreshInterval = 0.2f;
+    [SerializeField, Range(0f, 180f)] private float playerFacingAngle = 50f;
+    [SerializeField, Min(0f)] private float playerSeekerDialogueDelay = 3f;
+    [SerializeField, Min(0.1f)] private float playerTrackingTurnSpeed = 540f;
 
     private static readonly int Dialogue1Finished = Animator.StringToHash("IsDialogue1Finished");
     private static readonly int Seek = Animator.StringToHash("IsSeek");
@@ -27,8 +30,11 @@ public class IngSearchController : MonoBehaviour
     private static readonly int IdleShortName = Animator.StringToHash("Idle");
 
     private Coroutine sequence;
+    private HideController hideController;
     private bool hasStartedSearching;
     private bool hasFoundPlayer;
+    private bool hasCompletedFoundDialogue;
+    private bool hasStartedPlayerSeekerDialogue;
 
     private void Awake()
     {
@@ -59,18 +65,27 @@ public class IngSearchController : MonoBehaviour
             if (interactor != null)
                 player = interactor.transform;
         }
+
+        if (player != null)
+            hideController = player.GetComponentInParent<HideController>();
     }
 
     private void OnEnable()
     {
         if (npcDialogue != null)
             npcDialogue.DialogueCompleted += OnDialogueCompleted;
+
+        if (hideController != null)
+            hideController.ExitedHide += OnPlayerExitedHide;
     }
 
     private void OnDisable()
     {
         if (npcDialogue != null)
             npcDialogue.DialogueCompleted -= OnDialogueCompleted;
+
+        if (hideController != null)
+            hideController.ExitedHide -= OnPlayerExitedHide;
 
         if (sequence != null)
         {
@@ -85,9 +100,35 @@ public class IngSearchController : MonoBehaviour
         }
     }
 
+    private void LateUpdate()
+    {
+        if (!hasFoundPlayer || player == null)
+            return;
+
+        Vector3 direction = player.position - transform.position;
+        direction.y = 0f;
+        if (direction.sqrMagnitude < 0.0001f)
+            return;
+
+        Quaternion targetRotation = Quaternion.LookRotation(direction);
+        transform.rotation = Quaternion.RotateTowards(
+            transform.rotation,
+            targetRotation,
+            playerTrackingTurnSpeed * Time.deltaTime);
+    }
+
     private void OnDialogueCompleted(NpcDialogue dialogue, NpcConversationStage stage)
     {
-        if (dialogue != npcDialogue || stage != NpcConversationStage.First || hasStartedSearching)
+        if (dialogue != npcDialogue)
+            return;
+
+        if (stage == NpcConversationStage.Found)
+        {
+            hasCompletedFoundDialogue = true;
+            return;
+        }
+
+        if (stage != NpcConversationStage.First || hasStartedSearching)
             return;
 
         if (!HasRequiredReferences())
@@ -140,6 +181,19 @@ public class IngSearchController : MonoBehaviour
             (npcDialogue.foundDialogueLines == null || npcDialogue.foundDialogueLines.Count == 0))
         {
             Debug.LogError($"{name}: Add at least one line to NpcDialogue's Found Dialogue Lines.", npcDialogue);
+            valid = false;
+        }
+
+        if (npcDialogue != null &&
+            (npcDialogue.playerSeekerDialogueLines == null || npcDialogue.playerSeekerDialogueLines.Count == 0))
+        {
+            Debug.LogError($"{name}: Add at least one line to NpcDialogue's Player Seeker Dialogue Lines.", npcDialogue);
+            valid = false;
+        }
+
+        if (hideController == null)
+        {
+            Debug.LogError($"{name}: Assign a player with a HideController to IngSearchController.", this);
             valid = false;
         }
 
@@ -197,11 +251,19 @@ public class IngSearchController : MonoBehaviour
             if (HasReachedPlayer())
             {
                 hasFoundPlayer = true;
+                if (hideController != null)
+                    hideController.SetHidingEnabled(false);
+
                 agent.isStopped = true;
                 agent.ResetPath();
+                agent.updateRotation = false;
                 SetAnimatorSignal(Seek, false);
                 SetAnimatorSignal(Find, false);
                 animator.Play(IdleState, 0, 0f);
+
+                if (TaskManager.Instance != null)
+                    TaskManager.Instance.AddProgress("find_hiding_spot");
+
                 sequence = StartCoroutine(WaitForIdleAndTalk());
                 yield break;
             }
@@ -220,16 +282,6 @@ public class IngSearchController : MonoBehaviour
     private IEnumerator WaitForIdleAndTalk()
     {
         yield return null;
-        Vector3 dir = player.position - transform.position; dir.y = 0f;
-        if (dir.sqrMagnitude > 0.01f)
-        {
-            Quaternion target = Quaternion.LookRotation(dir);
-            for (float t = 0f; t < 0.3f; t += Time.deltaTime)
-            {
-                transform.rotation = Quaternion.Slerp(transform.rotation, target, t / 0.3f);
-                yield return null;
-            }
-        }
 
         if (animator.GetCurrentAnimatorStateInfo(0).shortNameHash != IdleShortName)
             animator.Play(IdleState, 0, 0f);
@@ -244,6 +296,56 @@ public class IngSearchController : MonoBehaviour
             Debug.LogError($"{name}: Could not start Ing's found-player dialogue.", this);
 
         sequence = null;
+    }
+
+    private void OnPlayerExitedHide(HideController controller)
+    {
+        if (controller != hideController || !hasFoundPlayer || hasStartedPlayerSeekerDialogue)
+            return;
+
+        hasStartedPlayerSeekerDialogue = true;
+        sequence = StartCoroutine(TurnAndStartPlayerSeekerDialogue());
+    }
+
+    private IEnumerator TurnAndStartPlayerSeekerDialogue()
+    {
+        while (!hasCompletedFoundDialogue || (dialogueUI != null && dialogueUI.IsDialogueOpen))
+            yield return null;
+
+        if (player == null || dialogueUI == null)
+        {
+            Debug.LogError($"{name}: Player or DialogueUI was lost before starting the player-seeker dialogue.", this);
+            sequence = null;
+            yield break;
+        }
+
+        yield return new WaitForSeconds(playerSeekerDialogueDelay);
+
+        FirstPersonLook playerLook = player.GetComponentInChildren<FirstPersonLook>();
+        if (playerLook == null)
+        {
+            Debug.LogError($"{name}: Could not find the player's FirstPersonLook component.", this);
+            sequence = null;
+            yield break;
+        }
+
+        while (!IsPlayerFacingIng(playerLook))
+            yield return null;
+
+        if (!dialogueUI.StartDialogue(npcDialogue, playerLook, NpcConversationStage.PlayerSeeker))
+            Debug.LogError($"{name}: Could not start Ing's player-seeker dialogue.", this);
+
+        sequence = null;
+    }
+
+    private bool IsPlayerFacingIng(FirstPersonLook playerLook)
+    {
+        Vector3 playerForward = Vector3.ProjectOnPlane(playerLook.transform.forward, Vector3.up);
+        Vector3 directionToIng = Vector3.ProjectOnPlane(transform.position - playerLook.transform.position, Vector3.up);
+        if (playerForward.sqrMagnitude < 0.0001f || directionToIng.sqrMagnitude < 0.0001f)
+            return false;
+
+        return Vector3.Angle(playerForward, directionToIng) <= playerFacingAngle;
     }
 
     private bool HasReachedPlayer()

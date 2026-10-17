@@ -1,4 +1,5 @@
 
+using System;
 using UnityEngine;
 
 public class HideController : MonoBehaviour
@@ -23,6 +24,7 @@ public class HideController : MonoBehaviour
     private HideSpot activeSpot;
 
     private bool isHiding;
+    private bool hidingEnabled = true;
     private bool hasSavedPosition;
     private bool wasRigidbodyKinematic;
 
@@ -32,6 +34,8 @@ public class HideController : MonoBehaviour
     private Vector3 originalLinearVelocity;
     private Vector3 originalAngularVelocity;
     private bool hasSavedCameraPosition;
+
+    public event Action<HideController> ExitedHide;
 
     private void Awake()
     {
@@ -65,7 +69,7 @@ public class HideController : MonoBehaviour
     {
         HideSpot spot = other.GetComponentInParent<HideSpot>();
 
-        if (spot == null || isHiding)
+        if (spot == null || isHiding || !hidingEnabled)
             return;
 
         currentSpot = spot;
@@ -85,9 +89,13 @@ public class HideController : MonoBehaviour
 
     private void EnterHide()
     {
-        if (currentSpot == null ||
+        if (!hidingEnabled ||
+            currentSpot == null ||
             currentSpot.HidePosition == null)
         {
+            if (!hidingEnabled)
+                return;
+
             Debug.LogWarning(
                 "HideSpot or HidePosition is missing."
             );
@@ -137,6 +145,16 @@ public class HideController : MonoBehaviour
         ShowPrompt(activeSpot.ExitMessage);
     }
 
+    public void SetHidingEnabled(bool enabled)
+    {
+        hidingEnabled = enabled;
+        if (!hidingEnabled && !isHiding)
+        {
+            currentSpot = null;
+            HidePrompt();
+        }
+    }
+
     private void ExitHide()
     {
         if (!hasSavedPosition)
@@ -162,6 +180,8 @@ public class HideController : MonoBehaviour
             ShowPrompt(currentSpot.HideMessage);
         else
             HidePrompt();
+
+        ExitedHide?.Invoke(this);
     }
 
     private void SetControlsEnabled(bool isEnabled)

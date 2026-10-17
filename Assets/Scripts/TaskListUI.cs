@@ -28,9 +28,10 @@ public class TaskListUI : MonoBehaviour
         manager.TaskUpdated += OnTaskUpdated;
         manager.TaskCompleted += OnTaskCompleted;
 
-        // สร้างแถวให้ Task ที่มีอยู่แล้วตั้งแต่เริ่ม
+        // สร้างแถว
         foreach (TaskData t in manager.Tasks)
-            OnTaskAdded(t);
+            if (t.active)
+                OnTaskAdded(t);
     }
 
     void OnDestroy()

@@ -6,7 +6,8 @@ using UnityEngine;
 public enum NpcConversationStage
 {
     First,
-    Found
+    Found,
+    PlayerSeeker
 }
 
 [Serializable]
@@ -25,6 +26,7 @@ public class NpcDialogue : MonoBehaviour
 
     public List<DialogueLine> dialogueLines = new List<DialogueLine>();
     public List<DialogueLine> foundDialogueLines = new List<DialogueLine>();
+    public List<DialogueLine> playerSeekerDialogueLines = new List<DialogueLine>();
 
     public event Action<NpcDialogue, NpcConversationStage> DialogueCompleted;
 
@@ -42,9 +44,15 @@ public class NpcDialogue : MonoBehaviour
 
     public List<DialogueLine> GetDialogueLines(NpcConversationStage stage)
     {
-        return stage == NpcConversationStage.Found
-            ? foundDialogueLines
-            : dialogueLines;
+        switch (stage)
+        {
+            case NpcConversationStage.Found:
+                return foundDialogueLines;
+            case NpcConversationStage.PlayerSeeker:
+                return playerSeekerDialogueLines;
+            default:
+                return dialogueLines;
+        }
     }
 
     public void SetInteractionEnabled(bool isEnabled)
