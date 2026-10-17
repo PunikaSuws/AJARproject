@@ -23,6 +23,10 @@ public class FirstPersonMovement : MonoBehaviour
         rigidbody = GetComponent<Rigidbody>();
     }
 
+    [Header("Step Up")]
+    public float stepHeight = 0.4f;     // ความสูงสูงสุดที่ก้าวได้
+    public float stepSmooth = 0.1f;     // ระยะที่ยกต่อเฟรมฟิสิกส์
+    public float lowerRayDistance = 0.6f; // ระยะตรวจด้านหน้า (ปรับตามรัศมีแคปซูล)
     void FixedUpdate()
     {
         // Update IsRunning from input.
@@ -36,9 +40,32 @@ public class FirstPersonMovement : MonoBehaviour
         }
 
         // Get targetVelocity from input.
-        Vector2 targetVelocity =new Vector2( Input.GetAxis("Horizontal") * targetMovingSpeed, Input.GetAxis("Vertical") * targetMovingSpeed);
+        Vector2 targetVelocity = new Vector2(Input.GetAxis("Horizontal") * targetMovingSpeed, Input.GetAxis("Vertical") * targetMovingSpeed);
 
         // Apply movement.
         rigidbody.linearVelocity = transform.rotation * new Vector3(targetVelocity.x, rigidbody.linearVelocity.y, targetVelocity.y);
+        StepClimb();
+    }
+    void StepClimb()
+    {
+        Vector3 moveDir = new Vector3(rigidbody.linearVelocity.x, 0f, rigidbody.linearVelocity.z);
+        if (moveDir.sqrMagnitude < 0.01f) return;
+        moveDir.Normalize();
+
+        Vector3 footPos = transform.position + Vector3.up * 0.05f;
+        Vector3 stepPos = transform.position + Vector3.up * stepHeight;
+
+        // เส้นล่างชนอะไรสักอย่างที่เท้า
+        if (Physics.Raycast(footPos, moveDir, out RaycastHit lowerHit, lowerRayDistance))
+        {
+            // กันไม่ให้ปีนผนังชัน: ต้องเป็นพื้นผิวแนวตั้งจริงๆ
+            if (Mathf.Abs(lowerHit.normal.y) > 0.3f) return;
+
+            // เส้นบนต้องโล่ง แปลว่าเป็นขั้น ไม่ใช่กำแพง
+            if (!Physics.Raycast(stepPos, moveDir, lowerRayDistance + 0.1f))
+            {
+                rigidbody.position += Vector3.up * stepSmooth;
+            }
+        }
     }
 }

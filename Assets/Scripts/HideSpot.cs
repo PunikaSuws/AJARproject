@@ -8,7 +8,7 @@ public class HideSpot : MonoBehaviour
 
     [Header("Prompt")]
     public string hideMessage = "[E] ซ่อน";
-    public string exitMessage = "[E] ออกจากที่ซ่อน";
+    public string exitMessage = "[E] ออก";
 
     public Transform HidePosition => hidePosition;
 
