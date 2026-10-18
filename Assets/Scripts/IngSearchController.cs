@@ -5,6 +5,17 @@ using UnityEngine.AI;
 [RequireComponent(typeof(NavMeshAgent))]
 public class IngSearchController : MonoBehaviour
 {
+    // เรียงตามลำดับเหตุการณ์ (ค่าที่มากกว่า = เลยขั้นนั้นมาแล้ว)
+    private enum IngState
+    {
+        Idle,                // ยังไม่เริ่ม
+        Counting,            // นับเลข
+        Searching,           // เดินหาผู้เล่น
+        FoundTalking,        // เจอผู้เล่นแล้ว (ไดอาล็อก Found)
+        WaitingPlayerSeeker, // เริ่มกระบวนการไดอาล็อก PlayerSeeker แล้ว
+        Leaving              // เดินออก
+    }
+
     [Header("References")]
     [SerializeField] private Transform player;
     [SerializeField] private Animator animator;
@@ -14,6 +25,7 @@ public class IngSearchController : MonoBehaviour
     [SerializeField] private NpcDialogue npcDialogue;
     [SerializeField] private Animator eyeAnimator;
     [SerializeField] private LightingDim lightingDim;
+    [SerializeField] private ChapterEndTrigger chapterEnd;
 
     [Header("Search Settings")]
     [SerializeField, Min(0f)] private float countDuration = 10f;
@@ -37,15 +49,11 @@ public class IngSearchController : MonoBehaviour
 
     private Coroutine sequence;
     private HideController hideController;
-    private bool hasStartedSearching;
-    private bool hasFoundPlayer;
+    private IngState state = IngState.Idle;
     private bool hasCompletedFoundDialogue;
-    private bool hasStartedPlayerSeekerDialogue;
-    private bool isLeaving;
 
-    public bool IsSearching { get; internal set; }
-    public bool HasFoundPlayer => hasFoundPlayer;
-
+    public bool IsSearching => state == IngState.Searching;
+    public bool HasFoundPlayer => state >= IngState.FoundTalking;
 
     private void Awake()
     {
@@ -116,7 +124,7 @@ public class IngSearchController : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (!hasFoundPlayer || isLeaving || player == null)
+        if (!HasFoundPlayer || state == IngState.Leaving || player == null)
             return;
 
         Vector3 direction = player.position - transform.position;
@@ -138,7 +146,7 @@ public class IngSearchController : MonoBehaviour
 
         if (stage == NpcConversationStage.PlayerSeeker)
         {
-            if (!hasFoundPlayer || !hasStartedPlayerSeekerDialogue)
+            if (state != IngState.WaitingPlayerSeeker)
             {
                 Debug.LogError($"{name}: Seek dialogue completed before Ing found the player.", this);
                 return;
@@ -155,13 +163,13 @@ public class IngSearchController : MonoBehaviour
             return;
         }
 
-        if (stage != NpcConversationStage.First || hasStartedSearching)
+        if (stage != NpcConversationStage.First || state != IngState.Idle)
             return;
 
         if (!HasRequiredReferences())
             return;
 
-        hasStartedSearching = true;
+        state = IngState.Counting;
         npcDialogue.SetInteractionEnabled(false);
         SetAnimatorSignal(Seek, false);
         SetAnimatorSignal(Find, false);
@@ -247,7 +255,6 @@ public class IngSearchController : MonoBehaviour
     private IEnumerator CountThenSearch()
     {
         yield return new WaitForSeconds(countDuration);
-        Debug.Log("[Ing] count finished, start searching");
 
         if (agent == null || !agent.enabled || !agent.isOnNavMesh)
         {
@@ -256,7 +263,7 @@ public class IngSearchController : MonoBehaviour
             yield break;
         }
 
-        agent.stoppingDistance = foundDistance * 0.8f;   // 1.2 ม. หยุดก่อนชน
+        agent.stoppingDistance = foundDistance * 0.8f;
         if (!agent.SetDestination(player.position))
         {
             Debug.LogError($"{name}: Ing's NavMeshAgent could not set a path to the player.", this);
@@ -264,6 +271,7 @@ public class IngSearchController : MonoBehaviour
             yield break;
         }
 
+        state = IngState.Searching;
         agent.isStopped = false;
         SetAnimatorSignal(Seek, true);
         animator.Play(WalkState, 0, 0f);
@@ -272,7 +280,7 @@ public class IngSearchController : MonoBehaviour
 
     private IEnumerator SearchForPlayer()
     {
-        while (!hasFoundPlayer)
+        while (state == IngState.Searching)
         {
             if (player == null || !agent.isOnNavMesh)
             {
@@ -283,7 +291,7 @@ public class IngSearchController : MonoBehaviour
 
             if (HasReachedPlayer())
             {
-                hasFoundPlayer = true;
+                state = IngState.FoundTalking;
                 if (hideController != null)
                     hideController.SetHidingEnabled(false);
 
@@ -333,7 +341,7 @@ public class IngSearchController : MonoBehaviour
 
     private void OnPlayerExitedHide(HideController controller)
     {
-        if (controller != hideController || !hasFoundPlayer || hasStartedPlayerSeekerDialogue)
+        if (controller != hideController)
             return;
 
         StartPlayerSeekerDialogue();
@@ -341,10 +349,11 @@ public class IngSearchController : MonoBehaviour
 
     private void StartPlayerSeekerDialogue()
     {
-        if (!hasFoundPlayer || hasStartedPlayerSeekerDialogue)
+        // ต้องเจอผู้เล่นแล้ว และยังไม่เคยเริ่มกระบวนการ Seek
+        if (state != IngState.FoundTalking)
             return;
 
-        hasStartedPlayerSeekerDialogue = true;
+        state = IngState.WaitingPlayerSeeker;
         sequence = StartCoroutine(TurnAndStartPlayerSeekerDialogue());
     }
 
@@ -405,7 +414,6 @@ public class IngSearchController : MonoBehaviour
             SetAnimatorSignal(eyeAnimator, SeekDialogueFinished, true);
             eyeAnimator.Play("JanEye", 0, 0f);
 
-            Debug.Log("PlayEyeAndLeave: calling Dim");
             if (lightingDim != null)
                 lightingDim.Dim();
 
@@ -417,6 +425,8 @@ public class IngSearchController : MonoBehaviour
                 eyeAnimator.gameObject.SetActive(false);
             }
         }
+        if (chapterEnd != null)
+            chapterEnd.Arm();
 
         if (player == null || agent == null || !agent.enabled || !agent.isOnNavMesh)
         {
@@ -441,7 +451,7 @@ public class IngSearchController : MonoBehaviour
             yield break;
         }
 
-        isLeaving = true;
+        state = IngState.Leaving;
         agent.updateRotation = true;
         agent.isStopped = false;
         SetAnimatorSignal(Seek, true);
