@@ -42,6 +42,10 @@ public class IngSearchController : MonoBehaviour
     private bool hasStartedPlayerSeekerDialogue;
     private bool isLeaving;
 
+    public bool IsSearching { get; internal set; }
+    public bool HasFoundPlayer => hasFoundPlayer;
+    
+
     private void Awake()
     {
         if (agent == null)

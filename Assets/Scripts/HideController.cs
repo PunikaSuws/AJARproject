@@ -36,6 +36,7 @@ public class HideController : MonoBehaviour
     private bool hasSavedCameraPosition;
 
     public event Action<HideController> ExitedHide;
+    public bool IsHiding => isHiding;
 
     private void Awake()
     {
@@ -58,11 +59,8 @@ public class HideController : MonoBehaviour
             return;
         }
 
-        if (currentSpot != null &&
-            Input.GetKeyDown(KeyCode.E))
-        {
-            EnterHide();
-        }
+        if (hidingEnabled && currentSpot != null && Input.GetKeyDown(KeyCode.E))
+        EnterHide();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -146,14 +144,14 @@ public class HideController : MonoBehaviour
     }
 
     public void SetHidingEnabled(bool enabled)
+{
+    hidingEnabled = enabled;
+    if (!hidingEnabled && !isHiding)
     {
-        hidingEnabled = enabled;
-        if (!hidingEnabled && !isHiding)
-        {
-            currentSpot = null;
-            HidePrompt();
-        }
+        currentSpot = null;
+        HidePrompt();
     }
+}
 
     private void ExitHide()
     {
@@ -171,17 +169,22 @@ public class HideController : MonoBehaviour
         SetPlayerRenderersEnabled(true);
         RestorePlayerPhysics();
 
-        currentSpot = activeSpot;
         isHiding = false;
-        hasSavedPosition = false;
-        activeSpot = null;
+hasSavedPosition = false;
 
-        if (currentSpot != null)
-            ShowPrompt(currentSpot.HideMessage);
-        else
-            HidePrompt();
+if (hidingEnabled)
+{
+    currentSpot = activeSpot;
+    ShowPrompt(activeSpot != null ? activeSpot.HideMessage : "");
+    if (activeSpot == null) HidePrompt();
+}
+else
+{
+    currentSpot = null;   // อิงเจอแล้ว เข้าใหม่ไม่ได้ ไม่โชว์ prompt
+    HidePrompt();
+}
 
-        ExitedHide?.Invoke(this);
+activeSpot = null;
     }
 
     private void SetControlsEnabled(bool isEnabled)
