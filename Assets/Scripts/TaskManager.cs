@@ -5,8 +5,8 @@ using UnityEngine;
 [Serializable]
 public class TaskData
 {
-    public string id;
-    public string title;
+    public string id;                 // เช่น "collect_items"
+    public string title;              // ข้อความที่โชว์
     public int targetAmount = 1;
     public bool startActive = true;   // ติ๊กออก = ซ่อนไว้ก่อน
     [NonSerialized] public int currentAmount;
@@ -36,10 +36,18 @@ public class TaskManager : MonoBehaviour
         Instance = this;
 
         foreach (TaskData t in tasks)
+        {
+            t.currentAmount = 0;
+            t.completed = false;
             t.active = t.startActive;
+        }
     }
 
-    // เพิ่ม Task ด้วยโค้ด (กรณีไม่ได้ใส่ไว้ใน Inspector)
+    void OnDestroy()
+    {
+        if (Instance == this) Instance = null;
+    }
+
     public void AddTask(TaskData task)
     {
         if (tasks.Exists(t => t.id == task.id)) return;
@@ -48,13 +56,12 @@ public class TaskManager : MonoBehaviour
         TaskAdded?.Invoke(task);
     }
 
-    // เปิด Task ที่ซ่อนไว้ใน Inspector
     public void ActivateTask(string id)
     {
         TaskData task = tasks.Find(t => t.id == id);
         if (task == null)
         {
-            Debug.LogWarning($"ActivateTask: ไม่พบ Task id = {id}");
+            Debug.LogWarning("ActivateTask: ไม่พบ Task id = " + id);
             return;
         }
         if (task.active || task.completed) return;
@@ -76,5 +83,30 @@ public class TaskManager : MonoBehaviour
             task.completed = true;
             TaskCompleted?.Invoke(task);
         }
+    }
+
+    /// <summary>true ถ้า Task นี้ถูกเปิดแล้วและยังไม่เสร็จ</summary>
+    public bool IsActive(string id)
+    {
+        TaskData task = tasks.Find(t => t.id == id);
+        return task != null && task.active && !task.completed;
+    }
+
+    public bool IsCompleted(string id)
+    {
+        TaskData task = tasks.Find(t => t.id == id);
+        return task != null && task.completed;
+    }
+
+    /// <summary>ทำให้ Task เสร็จทันที (ใช้ปิด Task ที่ไม่จำเป็นแล้ว เช่น ขว้างผีค้างอยู่)</summary>
+    public void ForceComplete(string id)
+    {
+        TaskData task = tasks.Find(t => t.id == id);
+        if (task == null || !task.active || task.completed) return;
+
+        task.currentAmount = task.targetAmount;
+        TaskUpdated?.Invoke(task);
+        task.completed = true;
+        TaskCompleted?.Invoke(task);
     }
 }
