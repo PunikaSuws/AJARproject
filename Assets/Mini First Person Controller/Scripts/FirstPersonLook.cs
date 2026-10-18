@@ -2,24 +2,14 @@
 
 public class FirstPersonLook : MonoBehaviour
 {
-    [SerializeField]
-    Transform character;
+    [SerializeField] Transform character;
     public float sensitivity = 2;
     public float smoothing = 1.5f;
 
     Vector2 velocity;
     Vector2 frameVelocity;
-    bool lookLocked;
 
-    public bool LookLocked
-    {
-        get { return lookLocked; }
-        set
-        {
-            lookLocked = value;
-            frameVelocity = Vector2.zero;
-        }
-    }
+    public bool LookLocked { get; set; }
 
     void Reset()
     {
@@ -33,9 +23,9 @@ public class FirstPersonLook : MonoBehaviour
 
     void Update()
     {
-        if (lookLocked)
+        if (LookLocked)
         {
-            //Debug.Log("locked");
+            frameVelocity = Vector2.zero;   // ไม่ให้ค่าค้างไหลต่อ
             return;
         }
 

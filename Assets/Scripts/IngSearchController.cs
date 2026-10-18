@@ -13,6 +13,7 @@ public class IngSearchController : MonoBehaviour
     [SerializeField] private DialogueUI dialogueUI;
     [SerializeField] private NpcDialogue npcDialogue;
     [SerializeField] private Animator eyeAnimator;
+    [SerializeField] private LightingDim lightingDim;
 
     [Header("Search Settings")]
     [SerializeField, Min(0f)] private float countDuration = 10f;
@@ -44,7 +45,7 @@ public class IngSearchController : MonoBehaviour
 
     public bool IsSearching { get; internal set; }
     public bool HasFoundPlayer => hasFoundPlayer;
-    
+
 
     private void Awake()
     {
@@ -403,6 +404,11 @@ public class IngSearchController : MonoBehaviour
             eyeAnimator.gameObject.SetActive(true);
             SetAnimatorSignal(eyeAnimator, SeekDialogueFinished, true);
             eyeAnimator.Play("JanEye", 0, 0f);
+
+            Debug.Log("PlayEyeAndLeave: calling Dim");
+            if (lightingDim != null)
+                lightingDim.Dim();
+
             yield return null;
 
             if (eyeAnimator.GetCurrentAnimatorStateInfo(0).shortNameHash != EyeAnimationShortName)

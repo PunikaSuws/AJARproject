@@ -14,6 +14,7 @@ public class HideController : MonoBehaviour
     [Header("UI")]
     [SerializeField] private GameObject promptObject;
     [SerializeField] private TMPro.TMP_Text promptText;
+    [SerializeField] private DialogueUI dialogueUI;
 
     private Renderer[] playerRenderers;
     private bool[] playerRendererStates;
@@ -25,6 +26,7 @@ public class HideController : MonoBehaviour
 
     private bool isHiding;
     private bool hidingEnabled = true;
+    private bool exitLockedDuringDialogue;
     private bool hasSavedPosition;
     private bool wasRigidbodyKinematic;
 
@@ -51,6 +53,9 @@ public class HideController : MonoBehaviour
     {
         if (isHiding)
         {
+            if (exitLockedDuringDialogue)
+                return;
+
             if (Input.GetKeyDown(KeyCode.E))
             {
                 ExitHide();
@@ -60,7 +65,7 @@ public class HideController : MonoBehaviour
         }
 
         if (hidingEnabled && currentSpot != null && Input.GetKeyDown(KeyCode.E))
-        EnterHide();
+            EnterHide();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -144,14 +149,25 @@ public class HideController : MonoBehaviour
     }
 
     public void SetHidingEnabled(bool enabled)
-{
-    hidingEnabled = enabled;
-    if (!hidingEnabled && !isHiding)
     {
-        currentSpot = null;
-        HidePrompt();
+        hidingEnabled = enabled;
+        if (!hidingEnabled && !isHiding)
+        {
+            currentSpot = null;
+            HidePrompt();
+        }
     }
-}
+
+    public void SetExitLockedDuringDialogue(bool locked)
+    {
+        exitLockedDuringDialogue = locked;
+    }
+
+    public void RestoreControlsIfNotHiding()
+    {
+        if (!isHiding)
+            SetControlsEnabled(true);
+    }
 
     private void ExitHide()
     {
@@ -165,26 +181,28 @@ public class HideController : MonoBehaviour
 
         RestoreCameraPosition();
 
-        SetControlsEnabled(true);
+        if (dialogueUI == null || !dialogueUI.IsDialogueOpen)
+            SetControlsEnabled(true);
         SetPlayerRenderersEnabled(true);
         RestorePlayerPhysics();
 
         isHiding = false;
-hasSavedPosition = false;
+        exitLockedDuringDialogue = false;
+        hasSavedPosition = false;
 
-if (hidingEnabled)
-{
-    currentSpot = activeSpot;
-    ShowPrompt(activeSpot != null ? activeSpot.HideMessage : "");
-    if (activeSpot == null) HidePrompt();
-}
-else
-{
-    currentSpot = null;   // อิงเจอแล้ว เข้าใหม่ไม่ได้ ไม่โชว์ prompt
-    HidePrompt();
-}
+        if (hidingEnabled)
+        {
+            currentSpot = activeSpot;
+            ShowPrompt(activeSpot != null ? activeSpot.HideMessage : "");
+            if (activeSpot == null) HidePrompt();
+        }
+        else
+        {
+            currentSpot = null;   // อิงเจอแล้ว เข้าใหม่ไม่ได้ ไม่โชว์ prompt
+            HidePrompt();
+        }
 
-activeSpot = null;
+        activeSpot = null;
     }
 
     private void SetControlsEnabled(bool isEnabled)

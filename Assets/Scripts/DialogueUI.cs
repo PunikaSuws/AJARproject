@@ -21,6 +21,7 @@ public class DialogueUI : MonoBehaviour
     List<DialogueLine> currentDialogueLines;
     NpcConversationStage currentStage;
     FirstPersonLook playerLook;
+    HideController playerHideController;
     FirstPersonMovement playerMovement;
     Transform playerRoot;
     Quaternion lockedRotation;
@@ -113,6 +114,9 @@ public class DialogueUI : MonoBehaviour
         currentDialogueLines = lines;
         currentStage = stage;
         playerLook = look;
+        playerHideController = playerLook != null
+            ? playerLook.GetComponentInParent<HideController>()
+            : null;
         playerMovement = playerLook != null
             ? playerLook.GetComponentInParent<FirstPersonMovement>()
             : null;
@@ -124,6 +128,13 @@ public class DialogueUI : MonoBehaviour
         if (playerLook != null)
         {
             playerLook.LookLocked = true;
+        }
+
+        if (currentStage == NpcConversationStage.Found &&
+            playerHideController != null &&
+            playerHideController.IsHiding)
+        {
+            playerHideController.SetExitLockedDuringDialogue(true);
         }
 
         if (playerMovement != null)
@@ -206,6 +217,12 @@ public class DialogueUI : MonoBehaviour
         currentDialogue = null;
         currentDialogueLines = null;
         isClosing = false;
+
+        if (playerHideController != null)
+        {
+            playerHideController.SetExitLockedDuringDialogue(false);
+            playerHideController = null;
+        }
 
         if (playerLook != null)
         {
