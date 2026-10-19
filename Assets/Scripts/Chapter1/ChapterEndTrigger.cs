@@ -52,6 +52,8 @@ public class ChapterEndTrigger : MonoBehaviour
         foreach (var b in disableOnTrigger)
             if (b != null) b.enabled = false;
 
+        ChapterProgress.Unlock(2);   // เพิ่มบรรทัดนี้: บันทึกว่าปลดล็อกตอนที่ 2
+
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = false;
 
