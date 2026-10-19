@@ -64,7 +64,7 @@ public class IntroVideo : MonoBehaviour
         videoPlayer.errorReceived += (vp, msg) => Debug.LogError("[Intro] Video error: " + msg);
 
         videoPlayer.Prepare();
-        float timeout = Time.unscaledTime + 10f;
+        float timeout = Time.unscaledTime + 40f;
         while (!videoPlayer.isPrepared && Time.unscaledTime < timeout)
             yield return null;
 

@@ -13,6 +13,12 @@ public class DialogueUI : MonoBehaviour
     [SerializeField] Button nextButton;
     [SerializeField] Animator panelAnimator;
 
+    [Header("Sounds (ไม่ใส่ = ไม่มีเสียง)")]
+    [SerializeField] AudioClip openSound;     // ตอนหน้าต่างไดอาล็อกเปิด
+    [SerializeField] AudioClip closeSound;    // ตอนหน้าต่างไดอาล็อกปิด
+    [SerializeField] AudioClip clickSound;    // ตอนกดปุ่ม Next
+    [Range(0f, 1f)] [SerializeField] float sfxVolume = 1f;
+
     [Header("Animation Settings")]
     [SerializeField] string animatorParameter = "IsTalk";
     [SerializeField] string closeStateName = "DialogueClose";
@@ -30,12 +36,25 @@ public class DialogueUI : MonoBehaviour
     bool isClosing;
     //bool wasPlayerLookEnabled;
     bool wasPlayerMovementEnabled;
+    AudioSource sfxSource;
     CursorLockMode previousCursorLockState;
     bool previousCursorVisibility;
 
     public bool IsDialogueOpen
     {
         get { return dialogueOpen || isClosing; }
+    }
+
+    void PlaySfx(AudioClip clip)
+    {
+        if (clip == null) return;
+        if (sfxSource == null)
+        {
+            sfxSource = gameObject.AddComponent<AudioSource>();
+            sfxSource.playOnAwake = false;
+            sfxSource.spatialBlend = 0f;   // เสียง 2D
+        }
+        sfxSource.PlayOneShot(clip, sfxVolume * GameAudio.SfxVolume);
     }
 
     void Awake()
@@ -158,6 +177,7 @@ public class DialogueUI : MonoBehaviour
         dialoguePanel.SetActive(true);
         nextButton.gameObject.SetActive(true);
         panelAnimator.SetBool(animatorParameter, true);
+        PlaySfx(openSound);
         ShowCurrentLine();
         return true;
     }
@@ -166,6 +186,8 @@ public class DialogueUI : MonoBehaviour
     {
         if (!dialogueOpen || isClosing)
             return;
+
+        PlaySfx(clickSound);
 
         if (lineIndex + 1 < currentDialogueLines.Count)
         {
@@ -190,6 +212,7 @@ public class DialogueUI : MonoBehaviour
     {
         isClosing = true;
         dialogueOpen = false;
+        PlaySfx(closeSound);
         panelAnimator.SetBool(animatorParameter, false);
 
         int closeState = Animator.StringToHash(closeStateName);
