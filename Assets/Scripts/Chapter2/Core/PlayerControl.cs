@@ -72,6 +72,15 @@ public class PlayerControl : MonoBehaviour
         Instance.Apply();
     }
 
+    /// <summary>ล้างการล็อกทั้งหมด (ใช้ตอนผู้เล่นฟื้นหลัง Game Over กันล็อกค้างจากผีพุ่ง ฯลฯ)</summary>
+    public static void ResetLocks()
+    {
+        if (Instance == null) return;
+        Instance.locks = 0;
+        Instance.cursorLocks = 0;
+        Instance.Apply();
+    }
+
     void Apply()
     {
         bool locked = locks > 0;

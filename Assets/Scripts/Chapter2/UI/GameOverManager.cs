@@ -126,8 +126,8 @@ public class GameOverManager : MonoBehaviour
         // ลืมตา
         if (fader != null) yield return fader.FadeFromBlack();
 
-        PlayerControl.Unlock(true);
-        PlayerControl.Unlock(false);
+        // ล้างล็อกทั้งหมด (ผีพุ่งใส่ก็ล็อกผู้เล่นไว้อีกชั้น ถ้า Unlock ทีละชั้นจะค้าง)
+        PlayerControl.ResetLocks();
         busy = false;
     }
 

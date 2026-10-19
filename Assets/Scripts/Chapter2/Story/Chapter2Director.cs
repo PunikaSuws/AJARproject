@@ -34,6 +34,11 @@ public class Chapter2Director : MonoBehaviour
     [SerializeField] float ghostDelaySeconds = 30f;
     [TextArea] [SerializeField] string ghostWarningText = "อย่าจ้องมองผีเกิน 3 วินาที";
     [SerializeField] float warningSeconds = 5f;
+    [SerializeField] float gazeWarningSeconds = 2.5f;   // ข้อความเตือนทุกครั้งที่เริ่มจ้องผี
+
+    [Header("ผีเกิดใหม่หลังกด ลองอีกครั้ง ช่วงก่อนหม้อดิน (สุ่มห่างจากผู้เล่น)")]
+    [SerializeField] float reviveSpawnMin = 14f;
+    [SerializeField] float reviveSpawnMax = 24f;
 
     [Header("วัตถุในฉาก")]
     [Tooltip("สมุด (ปิด Active ไว้ได้ จะเปิดเมื่อเก็บครบ 4 ชิ้น) เว้นว่างถ้าวางไว้เปิดตลอด")]
@@ -53,6 +58,7 @@ public class Chapter2Director : MonoBehaviour
     TaskManager tasks;
     bool potGhostTriggered;
     bool endingStarted;
+    Vector3 potSpawnPosition;
     Coroutine ghostTimer;
 
     void Awake()
@@ -65,7 +71,11 @@ public class Chapter2Director : MonoBehaviour
         if (throwablesRoot != null) throwablesRoot.SetActive(false);
         if (bookObject != null) bookObject.SetActive(false);
         if (throwController != null) throwController.enabled = false;
-        if (ghost != null) ghost.gameObject.SetActive(false);
+        if (ghost != null)
+        {
+            ghost.SilenceGazeAudio();
+            ghost.gameObject.SetActive(false);
+        }
     }
 
     void OnEnable()
@@ -79,7 +89,11 @@ public class Chapter2Director : MonoBehaviour
         ItemDetailView.Closed -= OnItemDetailClosed;
         GameOverManager.Revived -= OnRevived;
         if (tasks != null) tasks.TaskCompleted -= OnTaskCompleted;
-        if (ghost != null) ghost.ChaseStarted -= OnGhostChaseStarted;
+        if (ghost != null)
+        {
+            ghost.ChaseStarted -= OnGhostChaseStarted;
+            ghost.GazeStarted -= OnGhostGazeStarted;
+        }
     }
 
     void Start()
@@ -88,7 +102,11 @@ public class Chapter2Director : MonoBehaviour
         if (tasks == null) { Debug.LogError("Chapter2Director: ไม่พบ TaskManager ใน Scene"); return; }
 
         tasks.TaskCompleted += OnTaskCompleted;
-        if (ghost != null) ghost.ChaseStarted += OnGhostChaseStarted;
+        if (ghost != null)
+        {
+            ghost.ChaseStarted += OnGhostChaseStarted;
+            ghost.GazeStarted += OnGhostGazeStarted;
+        }
 
         if (cutscene != null && openingClip != null)
             cutscene.Play(openingClip, BeginGameplay, true, true, false);
@@ -163,8 +181,16 @@ public class Chapter2Director : MonoBehaviour
 
         potGhostTriggered = true;
         if (ghostTimer != null) StopCoroutine(ghostTimer);
+        if (potObject != null) potSpawnPosition = potObject.transform.position;
+        else if (PlayerControl.PlayerTransform != null) potSpawnPosition = PlayerControl.PlayerTransform.position;
 
-        if (ghost != null) ghost.AppearInFrontOfPlayer();
+        // เก็บหม้อดินครั้งแรก: ผีโผล่แถวจุดเก็บหม้อ หันคอตามผู้เล่น พอเดินห่างถึงเริ่มไล่
+        if (ghost != null) ghost.AppearAt(potSpawnPosition);
+    }
+
+    void OnGhostGazeStarted()
+    {
+        WarningBanner.Show(ghostWarningText, gazeWarningSeconds);
     }
 
     void OnGhostChaseStarted()
@@ -185,13 +211,16 @@ public class Chapter2Director : MonoBehaviour
 
         if (potGhostTriggered)
         {
-            // ช่วงหม้อดิน: ผีโผล่ในสายตา ยังไม่ไล่ รอผู้เล่นเดินห่างถึงเริ่มไล่ (Task เดิมยังอยู่)
+            // Revive หลังเก็บหม้อดิน: ผีโผล่ในระยะที่ผู้เล่นมองเห็น จ้องผู้เล่น
+            // พอผู้เล่นเดินห่างระยะหนึ่งผีจะเริ่มไล่เอง (Task เดิมยังอยู่)
             ghost.AppearInFrontOfPlayer();
         }
         else
         {
-            // ช่วงเก็บของ: ผีกลับไปเดินเตร่ที่จุดเกิด
-            Vector3 pos = ghostSpawnPoint != null ? ghostSpawnPoint.position : ghost.transform.position;
+            // ก่อนเก็บหม้อดิน: ผีเดินเตร่จากจุดสุ่มห่างผู้เล่น จั๊มป์สแคร์เมื่อถูกจ้องเท่านั้น
+            Vector3 pos;
+            if (!ghost.TryFindSpawnAwayFromPlayer(reviveSpawnMin, reviveSpawnMax, out pos))
+                pos = ghostSpawnPoint != null ? ghostSpawnPoint.position : ghost.transform.position;
             ghost.StartWander(pos);
         }
     }

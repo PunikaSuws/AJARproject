@@ -40,6 +40,10 @@ public class GhostController : MonoBehaviour
     [Header("Appear (โผล่ตรงหน้า)")]
     [SerializeField] float appearDistance = 5f;
     [SerializeField] float appearHeadTurnSpeed = 6f;
+    [Tooltip("โผล่แถวจุดหม้อดิน: ห่างผู้เล่นอย่างน้อยกี่เมตร")]
+    [SerializeField] float appearAtMinDistance = 7f;
+    [Tooltip("โผล่แถวจุดหม้อดิน: สุ่มจุดในรัศมีกี่เมตรรอบหม้อ")]
+    [SerializeField] float appearAtRadius = 9f;
     [SerializeField] float walkAwayDistance = 1.0f;  // ผู้เล่นเดินห่างเพิ่มจากตอนโผล่เท่านี้ = เริ่มไล่
     [SerializeField] float appearMinHold = 1.2f;
     [SerializeField] float appearMaxHold = 20f;      // กันค้าง: ถ้าผู้เล่นยืนนิ่งนานเกินนี้ก็ไล่เลย
@@ -73,6 +77,9 @@ public class GhostController : MonoBehaviour
     /// <summary>ยิงตอนผีเริ่มไล่ (ใช้เปิด Task หนี/ขว้าง)</summary>
     public event Action ChaseStarted;
 
+    /// <summary>ยิงทุกครั้งที่ผู้เล่น "เริ่มจ้อง" ผี (ใช้โชว์ข้อความเตือน)</summary>
+    public event Action GazeStarted;
+
     NavMeshAgent agent;
     Transform player;
     readonly HashSet<string> animParams = new HashSet<string>();
@@ -86,6 +93,8 @@ public class GhostController : MonoBehaviour
     bool lookAtPlayerIK;
     Coroutine stunRoutine;
     float baseAcceleration;
+    bool wasStaring;
+    float gazeWarnCooldown;
 
     void Awake()
     {
@@ -97,6 +106,70 @@ public class GhostController : MonoBehaviour
         agent.updateRotation = true;
         baseAcceleration = agent.acceleration;
         home = transform.position;
+        SilenceGazeAudio();
+    }
+
+    /// <summary>ปิดเสียงเตือนจ้องผีทันที (กันเสียงดังตอนเข้าฉาก)</summary>
+    public void SilenceGazeAudio()
+    {
+        if (gazeWarningLoop == null) return;
+        gazeWarningLoop.playOnAwake = false;
+        gazeWarningLoop.loop = true;
+        gazeWarningLoop.Stop();
+    }
+
+    /// <summary>หาจุดบน NavMesh ห่างผู้เล่น minDist-maxDist เมตร พยายามเลือกจุดที่อยู่นอกสายตา</summary>
+    public bool TryFindSpawnAwayFromPlayer(float minDist, float maxDist, out Vector3 result)
+    {
+        result = default;
+        Transform pl = Player;
+        if (pl == null) return false;
+
+        Transform cam = PlayerControl.CameraTransform != null
+            ? PlayerControl.CameraTransform
+            : (Camera.main != null ? Camera.main.transform : pl);
+
+        bool haveFallback = false;
+        Vector3 fallback = default;
+
+        for (int i = 0; i < 40; i++)
+        {
+            Vector2 circle = UnityEngine.Random.insideUnitCircle.normalized;
+            if (circle.sqrMagnitude < 0.01f) continue;
+            float d = UnityEngine.Random.Range(minDist, maxDist);
+            Vector3 candidate = pl.position + new Vector3(circle.x, 0f, circle.y) * d;
+
+            if (!NavMesh.SamplePosition(candidate, out NavMeshHit hit, 4f, NavMesh.AllAreas)) continue;
+            if (FlatDistance(hit.position, pl.position) < minDist * 0.7f) continue;
+
+            // ต้องมีทางเดินถึงผู้เล่น (กันเกิดในที่ปิด/เกาะลอย)
+            NavMeshPath path = new NavMeshPath();
+            if (!NavMesh.CalculatePath(hit.position, pl.position, NavMesh.AllAreas, path) ||
+                path.status != NavMeshPathStatus.PathComplete) continue;
+
+            if (!haveFallback) { fallback = hit.position; haveFallback = true; }
+
+            // ชอบจุดที่อยู่นอกสายตา: หลังผู้เล่น/ด้านข้าง หรือมีสิ่งกีดขวางบัง
+            Vector3 toPoint = hit.position + Vector3.up * 1.5f - cam.position;
+            bool inCone = Vector3.Angle(cam.forward, toPoint) < 70f;
+            bool blocked = Physics.Linecast(cam.position, hit.position + Vector3.up * 1.5f,
+                gazeBlockMask, QueryTriggerInteraction.Ignore);
+            if (!inCone || blocked)
+            {
+                result = hit.position;
+                return true;
+            }
+        }
+
+        if (haveFallback) { result = fallback; return true; }
+        return false;
+    }
+
+    /// <summary>เกิดที่จุด position แล้วไล่ทันที (ใช้ตอนผู้เล่นฟื้นหลัง Game Over ช่วงหลังหม้อดิน)</summary>
+    public void StartChaseAt(Vector3 position)
+    {
+        StartWander(position);   // รีเซ็ตสถานะทั้งหมดและวางผีลงจุดเกิด
+        StartChase();
     }
 
     Transform Player
@@ -123,6 +196,9 @@ public class GhostController : MonoBehaviour
 
         home = transform.position;
         gazeTimer = 0f;
+        wasStaring = false;
+        gazeWarnCooldown = 0f;
+        if (gazeWarningLoop != null) gazeWarningLoop.Stop();
         wanderWait = 0f;
         lookAtPlayerIK = false;
         agent.acceleration = baseAcceleration;
@@ -155,6 +231,50 @@ public class GhostController : MonoBehaviour
         if (!placed) placed = Place(pl.position + forward * appearDistance, 6f);
         if (!placed) Debug.LogWarning("GhostController: หาจุดโผล่บน NavMesh ไม่ได้", this);
 
+        BeginAppear(pl);
+    }
+
+    /// <summary>
+    /// โผล่ที่จุด position (แถวหม้อดิน) หันคอตามผู้เล่น ยังไม่ไล่
+    /// พอผู้เล่นเดินห่างจากผีเพิ่มตามค่า Walk Away Distance ถึงเริ่มไล่
+    /// </summary>
+    public void AppearAt(Vector3 position)
+    {
+        gameObject.SetActive(true);
+        StopAllCoroutines();
+        stunRoutine = null;
+        SetAnim(stunParam, false);
+
+        // เลือกจุดแถว ๆ position แต่ห่างผู้เล่นอย่างน้อย appearAtMinDistance เมตร
+        // ถ้าไม่มีจุดที่ห่างพอ จะใช้จุดที่ไกลผู้เล่นที่สุดที่หาเจอ
+        bool placed = false;
+        Transform pl = Player;
+        bool haveBest = false;
+        Vector3 best = default;
+        float bestDist = -1f;
+        for (int i = 0; i < 40; i++)
+        {
+            Vector2 c = UnityEngine.Random.insideUnitCircle * appearAtRadius;
+            Vector3 candidate = position + new Vector3(c.x, 0f, c.y);
+            if (!NavMesh.SamplePosition(candidate, out NavMeshHit hit, 2f, NavMesh.AllAreas)) continue;
+            float d = pl != null ? FlatDistance(hit.position, pl.position) : float.MaxValue;
+            if (d >= appearAtMinDistance) { best = hit.position; haveBest = true; break; }
+            if (d > bestDist) { bestDist = d; best = hit.position; haveBest = true; }
+        }
+        if (haveBest) placed = Place(best, 0.5f);
+        if (!placed) placed = Place(position, 3f);
+
+        if (!placed)
+        {
+            Debug.LogWarning("GhostController: จุดโผล่อยู่นอก NavMesh ใช้โผล่ตรงหน้าแทน", this);
+            AppearInFrontOfPlayer();
+            return;
+        }
+        BeginAppear(Player);
+    }
+
+    void BeginAppear(Transform pl)
+    {
         // หันหน้าหาผู้เล่นทันที
         Vector3 look = pl.position - transform.position; look.y = 0f;
         if (look.sqrMagnitude > 0.01f) transform.rotation = Quaternion.LookRotation(look);
@@ -250,7 +370,16 @@ public class GhostController : MonoBehaviour
         }
 
         // เช็คสายตา
-        if (IsBeingStaredAt())
+        gazeWarnCooldown -= Time.deltaTime;
+        bool staring = IsBeingStaredAt();
+        if (staring && !wasStaring && gazeWarnCooldown <= 0f)
+        {
+            gazeWarnCooldown = 2f;
+            GazeStarted?.Invoke();
+        }
+        wasStaring = staring;
+
+        if (staring)
         {
             gazeTimer += Time.deltaTime;
             if (gazeTimer >= gazeSeconds)
