@@ -75,7 +75,7 @@ public class ThrowController : MonoBehaviour
         foreach (Collider c in GetComponentsInChildren<Collider>())
             if (pc != null) Physics.IgnoreCollision(pc, c);
 
-        if (throwSound != null) AudioSource.PlayClipAtPoint(throwSound, cam.position);
+        if (throwSound != null) GameAudio.PlaySfx(throwSound, cam.position);
     }
 
     void RefreshUI()

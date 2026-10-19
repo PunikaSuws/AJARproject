@@ -31,12 +31,12 @@ public class Projectile : MonoBehaviour
                 if (TaskManager.Instance != null && !string.IsNullOrEmpty(progressTaskId))
                     TaskManager.Instance.AddProgress(progressTaskId);
             }
-            if (hitGhostSound != null) AudioSource.PlayClipAtPoint(hitGhostSound, transform.position);
+            if (hitGhostSound != null) GameAudio.PlaySfx(hitGhostSound, transform.position);
             Destroy(gameObject);
         }
         else if (hitOtherSound != null && collision.relativeVelocity.magnitude > 2f)
         {
-            AudioSource.PlayClipAtPoint(hitOtherSound, transform.position, 0.6f);
+            GameAudio.PlaySfx(hitOtherSound, transform.position, 0.6f);
         }
     }
 }

@@ -87,6 +87,9 @@ public class VideoCutscene : MonoBehaviour
         VideoPlayer.EventHandler handler = _ => ended = true;
         videoPlayer.loopPointReached += handler;
 
+        for (ushort track = 0; track < videoPlayer.audioTrackCount; track++)
+            videoPlayer.SetDirectAudioVolume(track, GameAudio.MusicVolume);
+
         videoPlayer.Play();
 
         // รอเฟรมแรกออกก่อนค่อยโชว์ (กันภาพขาว/กระพริบ)

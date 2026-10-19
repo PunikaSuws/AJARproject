@@ -6,7 +6,7 @@ using UnityEngine.Video;
 /// <summary>
 /// ตัวควบคุมเนื้อเรื่อง Chapter 2 ทั้งหมด (วางไว้ที่ GameObject "Chapter2Director" ตัวเดียวใน Scene)
 /// ลำดับ: คัตซีนเปิด -> collect_items -> (30 วิ ผีเดินเตร่) -> get_book -> get_pot -> ผีโผล่ตรงหน้า ->
-///        ไล่ (escape + throw_ghost) -> ห้องพระ -> turn_buddha -> place_items -> light_incense -> วิดีโอจบ -> EndScene
+///        ไล่ (escape + throw_ghost พร้อมกัน) -> ห้องพระ -> turn_buddha -> place_items -> light_incense -> วิดีโอจบ -> EndScene
 /// </summary>
 public class Chapter2Director : MonoBehaviour
 {
@@ -24,6 +24,8 @@ public class Chapter2Director : MonoBehaviour
     [SerializeField] VideoCutscene cutscene;
     [SerializeField] VideoClip openingClip;
     [SerializeField] VideoClip endingClip;
+    [Tooltip("หน้าจบเกม (Overlay) ถ้าเว้นว่างจะโหลด End Scene Name แทน")]
+    [SerializeField] EndScreenUI endScreen;
     [SerializeField] string endSceneName = "EndScene";
 
     [Header("ผี")]
@@ -69,11 +71,13 @@ public class Chapter2Director : MonoBehaviour
     void OnEnable()
     {
         ItemDetailView.Closed += OnItemDetailClosed;
+        GameOverManager.Revived += OnRevived;
     }
 
     void OnDisable()
     {
         ItemDetailView.Closed -= OnItemDetailClosed;
+        GameOverManager.Revived -= OnRevived;
         if (tasks != null) tasks.TaskCompleted -= OnTaskCompleted;
         if (ghost != null) ghost.ChaseStarted -= OnGhostChaseStarted;
     }
@@ -129,7 +133,7 @@ public class Chapter2Director : MonoBehaviour
                 break;
 
             case Escape:
-                // ถึงห้องพระ: ผีหายไป ปิด Task ขว้างที่ค้างอยู่ แล้วไปพลิกพระพุทธรูป
+                // ถึงห้องพระ: ผีหยุดไล่และหายไป (ขว้างไม่ครบก็ไม่เป็นไร) ปิด Task ขว้างที่ค้าง แล้วไปพลิกพระพุทธรูป
                 if (ghost != null) ghost.Banish();
                 tasks.ForceComplete(ThrowGhost);
                 if (throwController != null) throwController.enabled = false;
@@ -168,8 +172,28 @@ public class Chapter2Director : MonoBehaviour
         if (throwablesRoot != null) throwablesRoot.SetActive(true);
         if (throwController != null) throwController.enabled = true;
 
+        // เปิดพร้อมกัน: ขว้างผี + หนีเข้าห้องพระ (ข้อไหนก่อนก็ได้)
         tasks.ActivateTask(Escape);
         tasks.ActivateTask(ThrowGhost);
+    }
+
+    // ---------- ผู้เล่นฟื้นหลัง Game Over (ลองอีกครั้ง) ----------
+
+    void OnRevived()
+    {
+        if (ghost == null || endingStarted) return;
+
+        if (potGhostTriggered)
+        {
+            // ช่วงหม้อดิน: ผีโผล่ในสายตา ยังไม่ไล่ รอผู้เล่นเดินห่างถึงเริ่มไล่ (Task เดิมยังอยู่)
+            ghost.AppearInFrontOfPlayer();
+        }
+        else
+        {
+            // ช่วงเก็บของ: ผีกลับไปเดินเตร่ที่จุดเกิด
+            Vector3 pos = ghostSpawnPoint != null ? ghostSpawnPoint.position : ghost.transform.position;
+            ghost.StartWander(pos);
+        }
     }
 
     // ---------- 4) ฉากจบ ----------
@@ -187,13 +211,18 @@ public class Chapter2Director : MonoBehaviour
         yield return new WaitForSeconds(1.5f);
 
         if (cutscene != null && endingClip != null)
-            cutscene.Play(endingClip, LoadEndScene, false, true, true);
+            cutscene.Play(endingClip, ShowEnd, false, true, true);
         else
-            LoadEndScene();
+            ShowEnd();
     }
 
-    void LoadEndScene()
+    void ShowEnd()
     {
+        if (endScreen != null)
+        {
+            endScreen.Show();
+            return;
+        }
         Time.timeScale = 1f;
         SceneManager.LoadScene(endSceneName);
     }

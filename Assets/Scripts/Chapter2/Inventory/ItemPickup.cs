@@ -40,7 +40,7 @@ public class ItemPickup : MonoBehaviour, IInteractable
         taken = true;
 
         if (InventoryManager.Instance != null) InventoryManager.Instance.Add(item);
-        if (item.pickupSound != null) AudioSource.PlayClipAtPoint(item.pickupSound, transform.position);
+        if (item.pickupSound != null) GameAudio.PlaySfx(item.pickupSound, transform.position);
 
         onPicked.Invoke();
 

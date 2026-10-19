@@ -18,7 +18,7 @@ public class ThrowablePickup : MonoBehaviour, IInteractable
     {
         if (!CanInteract) return;
         ThrowController.Instance.AddAmmo(ammoAmount);
-        if (pickupSound != null) AudioSource.PlayClipAtPoint(pickupSound, transform.position);
+        if (pickupSound != null) GameAudio.PlaySfx(pickupSound, transform.position);
         Destroy(gameObject);
     }
 }

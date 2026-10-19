@@ -61,6 +61,15 @@ public class GhostController : MonoBehaviour
 
     public Mode CurrentMode { get; private set; } = Mode.Inactive;
 
+    /// <summary>ระยะที่ถือว่าประชิดตัว (ใช้กับระบบสติ)</summary>
+    public float CatchDistance { get { return catchDistance; } }
+
+    /// <summary>ระยะราบถึงผู้เล่น (ไม่มีผู้เล่น = ไกลมาก)</summary>
+    public float DistanceToPlayer
+    {
+        get { return Player == null ? float.MaxValue : FlatDistance(Player.position, transform.position); }
+    }
+
     /// <summary>ยิงตอนผีเริ่มไล่ (ใช้เปิด Task หนี/ขว้าง)</summary>
     public event Action ChaseStarted;
 
@@ -76,6 +85,7 @@ public class GhostController : MonoBehaviour
     float chaseRepathTimer;
     bool lookAtPlayerIK;
     Coroutine stunRoutine;
+    float baseAcceleration;
 
     void Awake()
     {
@@ -85,6 +95,7 @@ public class GhostController : MonoBehaviour
             foreach (AnimatorControllerParameter p in animator.parameters) animParams.Add(p.name);
 
         agent.updateRotation = true;
+        baseAcceleration = agent.acceleration;
         home = transform.position;
     }
 
@@ -113,6 +124,11 @@ public class GhostController : MonoBehaviour
         home = transform.position;
         gazeTimer = 0f;
         wanderWait = 0f;
+        lookAtPlayerIK = false;
+        agent.acceleration = baseAcceleration;
+        agent.isStopped = false;
+        StopAllCoroutines();
+        stunRoutine = null;
         SetMode(Mode.Wander);
         agent.speed = wanderSpeed;
         PickWanderTarget();
@@ -143,8 +159,11 @@ public class GhostController : MonoBehaviour
         Vector3 look = pl.position - transform.position; look.y = 0f;
         if (look.sqrMagnitude > 0.01f) transform.rotation = Quaternion.LookRotation(look);
 
+        agent.acceleration = baseAcceleration;
         agent.isStopped = true;
         agent.ResetPath();
+        SetAnim(walkParam, false);
+        SetAnim(runParam, false);
         distanceAtAppear = FlatDistance(pl.position, transform.position);
         appearTimer = 0f;
         gazeTimer = 0f;
@@ -255,7 +274,7 @@ public class GhostController : MonoBehaviour
         if (k > 0.05f)
         {
             if (!gazeWarningLoop.isPlaying) gazeWarningLoop.Play();
-            gazeWarningLoop.volume = k;
+            gazeWarningLoop.volume = k * GameAudio.SfxVolume;
         }
         else if (gazeWarningLoop.isPlaying)
         {
@@ -371,6 +390,7 @@ public class GhostController : MonoBehaviour
             agent.SetDestination(Player.position);
         }
 
+        // ผีประชิดตัว = จั๊มป์สแคร์ทันที -> Game Over
         if (FlatDistance(Player.position, transform.position) <= catchDistance)
             Caught();
     }

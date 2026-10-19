@@ -30,7 +30,7 @@ public class TaskInteractable : MonoBehaviour, IInteractable
         if (!CanInteract) return;
         used = true;
 
-        if (sound != null) AudioSource.PlayClipAtPoint(sound, transform.position);
+        if (sound != null) GameAudio.PlaySfx(sound, transform.position);
         onInteract.Invoke();
 
         if (!string.IsNullOrEmpty(progressTaskId) && TaskManager.Instance != null)

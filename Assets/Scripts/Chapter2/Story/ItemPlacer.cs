@@ -51,7 +51,7 @@ public class ItemPlacer : MonoBehaviour, IInteractable
         {
             if (go == null) continue;
             go.SetActive(true);
-            if (placeSound != null) AudioSource.PlayClipAtPoint(placeSound, go.transform.position);
+            if (placeSound != null) GameAudio.PlaySfx(placeSound, go.transform.position);
             yield return new WaitForSeconds(delayBetween);
         }
 

@@ -40,7 +40,7 @@ public class InventorySlotUI : MonoBehaviour
         }
     }
 
-    /// <summary>ทำให้เป็นช่องว่าง (ยังเห็นกรอบ แต่ไม่มีไอคอน/กดไม่ได้)</summary>
+    /// <summary>ทำให้เป็นช่องว่าง (ยังเห็นกรอบสีปกติ แต่ไม่มีไอคอน และคลิกแล้วไม่เกิดอะไร)</summary>
     public void Clear()
     {
         IsEmpty = true;
@@ -49,8 +49,10 @@ public class InventorySlotUI : MonoBehaviour
         if (hotkeyText != null) hotkeyText.text = "";
         if (button != null)
         {
+            // ไม่ปิด interactable เพราะ Unity จะย้อมกรอบเป็นสีจาง (Disabled Color)
+            // ช่องว่างไม่มี Listener อยู่แล้ว คลิกไปก็ไม่เกิดอะไร
             button.onClick.RemoveAllListeners();
-            button.interactable = false;
+            button.interactable = true;
         }
     }
 }

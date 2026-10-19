@@ -18,6 +18,8 @@ public class ItemDetailView : MonoBehaviour
 
     [Header("UI")]
     [SerializeField] GameObject panel;
+    [Tooltip("Image พื้นหลังการ์ด ใช้แสดง ItemData.detailCard (ไม่ใส่ก็ได้)")]
+    [SerializeField] Image cardImage;
     [SerializeField] TMP_Text titleText;
     [SerializeField] TMP_Text descriptionText;
     [SerializeField] RawImage modelImage;
@@ -29,11 +31,16 @@ public class ItemDetailView : MonoBehaviour
     [SerializeField] float cameraDistance = 2.2f;
     [SerializeField] float rotateSpeed = 6f;
     [SerializeField] float idleSpinSpeed = 20f;     // องศา/วินาที ตอนไม่ได้ลาก
-    [SerializeField] Color backgroundColor = new Color(0.05f, 0.05f, 0.07f, 1f);
+    [Tooltip("พื้นหลังของภาพโมเดล ค่าเริ่มต้นโปร่งใส (Alpha 0) จะเห็นการ์ดด้านหลัง ไม่มีกรอบสี่เหลี่ยม")]
+    [SerializeField] Color backgroundColor = new Color(0f, 0f, 0f, 0f);
+    [Tooltip("ติ๊ก = บังคับพื้นหลังโปร่งใสเสมอ (ไม่สนค่า Alpha ที่ Inspector จำไว้)")]
+    [SerializeField] bool transparentBackground = true;
+    [SerializeField] float lightIntensity = 2.5f;
     [SerializeField] KeyCode closeKey = KeyCode.E;
 
     Camera viewCamera;
     Light viewLight;
+    Light fillLight;
     Transform pivot;
     Transform modelRoot;
     RenderTexture rt;
@@ -62,7 +69,9 @@ public class ItemDetailView : MonoBehaviour
         GameObject camGo = new GameObject("ItemViewCamera");
         viewCamera = camGo.AddComponent<Camera>();
         viewCamera.clearFlags = CameraClearFlags.SolidColor;
-        viewCamera.backgroundColor = backgroundColor;
+        Color bg = backgroundColor;
+        if (transparentBackground) bg.a = 0f;
+        viewCamera.backgroundColor = bg;
         viewCamera.fieldOfView = 30f;
         viewCamera.nearClipPlane = 0.05f;
         viewCamera.farClipPlane = 20f;
@@ -76,8 +85,15 @@ public class ItemDetailView : MonoBehaviour
         viewLight = lightGo.AddComponent<Light>();
         viewLight.type = LightType.Point;
         viewLight.range = 12f;
-        viewLight.intensity = 1.6f;
+        viewLight.intensity = lightIntensity;
         viewLight.enabled = false;
+
+        GameObject fillGo = new GameObject("ItemViewFillLight");
+        fillLight = fillGo.AddComponent<Light>();
+        fillLight.type = LightType.Point;
+        fillLight.range = 12f;
+        fillLight.intensity = lightIntensity * 0.6f;
+        fillLight.enabled = false;
 
         distance = cameraDistance;
         PlaceCamera();
@@ -94,6 +110,7 @@ public class ItemDetailView : MonoBehaviour
         if (pivot != null) Destroy(pivot.gameObject);
         if (viewCamera != null) Destroy(viewCamera.gameObject);
         if (viewLight != null) Destroy(viewLight.gameObject);
+        if (fillLight != null) Destroy(fillLight.gameObject);
     }
 
     void PlaceCamera()
@@ -101,6 +118,7 @@ public class ItemDetailView : MonoBehaviour
         viewCamera.transform.position = ViewPosition + new Vector3(0f, 0.15f, -distance);
         viewCamera.transform.LookAt(ViewPosition);
         viewLight.transform.position = ViewPosition + new Vector3(1.2f, 1.5f, -distance * 0.8f);
+        fillLight.transform.position = ViewPosition + new Vector3(-1.5f, -0.5f, -distance * 0.6f);
     }
 
     public void Show(ItemData item, Action onClosedCallback = null)
@@ -111,8 +129,23 @@ public class ItemDetailView : MonoBehaviour
         currentItem = item;
         onClosed = onClosedCallback;
 
-        if (titleText != null) titleText.text = item.displayName;
-        if (descriptionText != null) descriptionText.text = item.description;
+        bool useCard = cardImage != null && item.detailCard != null;
+        if (cardImage != null)
+        {
+            cardImage.enabled = useCard;
+            if (useCard) cardImage.sprite = item.detailCard;
+        }
+        // ถ้ามีการ์ดรูปภาพ ซ่อนข้อความ (ข้อความอยู่ในรูปแล้ว) ไม่งั้นใช้ข้อความจาก ItemData
+        if (titleText != null)
+        {
+            titleText.gameObject.SetActive(!useCard);
+            titleText.text = item.displayName;
+        }
+        if (descriptionText != null)
+        {
+            descriptionText.gameObject.SetActive(!useCard);
+            descriptionText.text = item.description;
+        }
 
         BuildModel(item);
         distance = cameraDistance;
@@ -122,6 +155,7 @@ public class ItemDetailView : MonoBehaviour
 
         viewCamera.enabled = true;
         viewLight.enabled = true;
+        fillLight.enabled = true;
         if (panel != null) panel.SetActive(true);
 
         previousTimeScale = Time.timeScale;
@@ -137,7 +171,7 @@ public class ItemDetailView : MonoBehaviour
 
         GameObject go = Instantiate(item.modelPrefab, pivot);
         go.transform.localPosition = Vector3.zero;
-        go.transform.localRotation = Quaternion.identity;
+        go.transform.localRotation = Quaternion.Euler(item.viewEuler);
         go.SetActive(true);
         modelRoot = go.transform;
 
@@ -154,7 +188,7 @@ public class ItemDetailView : MonoBehaviour
 
         float maxExtent = Mathf.Max(b.size.x, Mathf.Max(b.size.y, b.size.z));
         if (maxExtent > 0.0001f)
-            go.transform.localScale *= modelSize / maxExtent;
+            go.transform.localScale *= modelSize / maxExtent * (item.viewScale > 0.01f ? item.viewScale : 1f);
 
         // คำนวณใหม่หลังย่อ แล้วเลื่อนให้จุดกึ่งกลางอยู่ที่ pivot (หมุนรอบศูนย์กลางพอดี)
         b = rs[0].bounds;
@@ -219,6 +253,7 @@ public class ItemDetailView : MonoBehaviour
 
         viewCamera.enabled = false;
         viewLight.enabled = false;
+        fillLight.enabled = false;
         if (panel != null) panel.SetActive(false);
         if (modelRoot != null) Destroy(modelRoot.gameObject);
         modelRoot = null;
