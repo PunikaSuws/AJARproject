@@ -171,9 +171,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MenuTransition
   fadeInOnStart: 1
-  sfx: {fileID: 0}
-  blinkClip: {fileID: 0}
-  lightsOutClip: {fileID: 0}
+  sfx: {fileID: 526720154}
+  blinkClip: {fileID: 8300000, guid: b6ef944609122ed4bb0f9e40da7f690a, type: 3}
+  lightsOutClip: {fileID: 8300000, guid: acc507bb244ba3c4ebbc66f498527381, type: 3}
 --- !u!225 &38944915
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -372,9 +372,9 @@ MonoBehaviour:
   hoverScale: 1.04
   pressScale: 0.97
   flickerAmount: 0.1
-  sfx: {fileID: 0}
-  hoverClip: {fileID: 0}
-  clickClip: {fileID: 0}
+  sfx: {fileID: 526720154}
+  hoverClip: {fileID: 8300000, guid: 0d4ab8b6c7b4e40409bae82f92e7ce1c, type: 3}
+  clickClip: {fileID: 8300000, guid: f3184e64dbf5b8a4ab0378df02b9cece, type: 3}
 --- !u!1 &293229825
 GameObject:
   m_ObjectHideFlags: 0
@@ -416,6 +416,135 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1019.3241, y: 0.00002, z: 9027.604}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &526720153
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 526720155}
+  - component: {fileID: 526720154}
+  m_Layer: 0
+  m_Name: UISound
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!82 &526720154
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 526720153}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 0
+  m_Volume: 0.6
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!4 &526720155
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 526720153}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -3268.095, y: 0.00003, z: 73476.34}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -934,9 +1063,9 @@ MonoBehaviour:
   hoverScale: 1.04
   pressScale: 0.97
   flickerAmount: 0.1
-  sfx: {fileID: 0}
-  hoverClip: {fileID: 0}
-  clickClip: {fileID: 0}
+  sfx: {fileID: 526720154}
+  hoverClip: {fileID: 8300000, guid: 0d4ab8b6c7b4e40409bae82f92e7ce1c, type: 3}
+  clickClip: {fileID: 8300000, guid: f3184e64dbf5b8a4ab0378df02b9cece, type: 3}
 --- !u!1 &973053184
 GameObject:
   m_ObjectHideFlags: 0
@@ -1158,8 +1287,8 @@ MonoBehaviour:
   lockedVisual: {fileID: 1778190212}
   lockedHint: {fileID: 688937944}
   shakeTarget: {fileID: 0}
-  sfx: {fileID: 0}
-  lockedClip: {fileID: 0}
+  sfx: {fileID: 526720154}
+  lockedClip: {fileID: 8300000, guid: 3390654b9587e494fbbe230535079bcb, type: 3}
   forceUnlocked: 0
 --- !u!114 &1177516807
 MonoBehaviour:
@@ -1327,9 +1456,9 @@ MonoBehaviour:
   hoverScale: 1.04
   pressScale: 0.97
   flickerAmount: 0.1
-  sfx: {fileID: 0}
-  hoverClip: {fileID: 0}
-  clickClip: {fileID: 0}
+  sfx: {fileID: 526720154}
+  hoverClip: {fileID: 8300000, guid: 0d4ab8b6c7b4e40409bae82f92e7ce1c, type: 3}
+  clickClip: {fileID: 8300000, guid: f3184e64dbf5b8a4ab0378df02b9cece, type: 3}
 --- !u!1 &1283025472
 GameObject:
   m_ObjectHideFlags: 0
@@ -1666,9 +1795,9 @@ MonoBehaviour:
   hoverScale: 1.04
   pressScale: 0.97
   flickerAmount: 0.1
-  sfx: {fileID: 0}
-  hoverClip: {fileID: 0}
-  clickClip: {fileID: 0}
+  sfx: {fileID: 526720154}
+  hoverClip: {fileID: 8300000, guid: 0d4ab8b6c7b4e40409bae82f92e7ce1c, type: 3}
+  clickClip: {fileID: 8300000, guid: f3184e64dbf5b8a4ab0378df02b9cece, type: 3}
 --- !u!1 &1745802497
 GameObject:
   m_ObjectHideFlags: 0
@@ -1846,3 +1975,4 @@ SceneRoots:
   - {fileID: 973053187}
   - {fileID: 594406059}
   - {fileID: 293229827}
+  - {fileID: 526720155}
