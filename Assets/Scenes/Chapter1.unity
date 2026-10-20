@@ -1155,7 +1155,7 @@ VideoPlayer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 40482794}
   m_Enabled: 1
-  m_VideoClip: {fileID: 32900000, guid: f436cfab7acf21b4bbc84fd639ece780, type: 3}
+  m_VideoClip: {fileID: 32900000, guid: 290a8810074213c409bbc5ea7347034e, type: 3}
   m_TargetCameraAlpha: 1
   m_TargetCamera3DLayout: 0
   m_TargetCamera: {fileID: 88020235}
@@ -1172,7 +1172,7 @@ VideoPlayer:
   m_TargetAudioSources:
   - {fileID: 0}
   m_DirectAudioVolumes:
-  - 1
+  - 0.7
   m_Url: 
   m_EnabledAudioTracks: 01
   m_DirectAudioMutes: 00
@@ -1772,10 +1772,10 @@ MonoBehaviour:
   heartbeatClip: {fileID: 8300000, guid: 26f2c02b2d50df745a1baed5f4d43961, type: 3}
   ingTransform: {fileID: 28511915}
   playerTransform: {fileID: 417997754}
-  farDistance: 20
+  farDistance: 30
   nearDistance: 3
   heartbeatVolume: {x: 0.6, y: 1}
-  heartbeatPitch: {x: 0.8, y: 1.4}
+  heartbeatPitch: {x: 0.6, y: 1.4}
   firstSoundDelay: 5
 --- !u!4 &76713256
 Transform:
@@ -46084,7 +46084,7 @@ VideoPlayer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1911804809}
   m_Enabled: 1
-  m_VideoClip: {fileID: 32900000, guid: 263ecc9c8031e304993d903389665e43, type: 3}
+  m_VideoClip: {fileID: 32900000, guid: bcfb43b8db3c3a84e8ba5e7b04db1f6a, type: 3}
   m_TargetCameraAlpha: 1
   m_TargetCamera3DLayout: 0
   m_TargetCamera: {fileID: 88020235}

@@ -32,6 +32,10 @@ public class Chapter2Director : MonoBehaviour
     [Tooltip("ติ๊ก = ตอนขึ้นหน้าจบเกม ค้างเฟรมสุดท้ายของวิดีโอไว้เป็นพื้นหลัง (ไม่ติ๊ก = จอดำ)")]
     [SerializeField] bool holdEndingLastFrame = true;
 
+    [Header("เสียงระทึก (ไม่ใส่ก็ได้)")]
+    [Tooltip("เริ่มตอนผีโผล่หลังเก็บหม้อดิน ปิดตอนเริ่มฉากจบ")]
+    [SerializeField] TensionMusic tension;
+
     [Header("ผี")]
     [SerializeField] GhostController ghost;
     [SerializeField] Transform ghostSpawnPoint;
@@ -58,6 +62,7 @@ public class Chapter2Director : MonoBehaviour
 
     [Header("Task ตอนเริ่มบท (ข้อความมาจาก TaskManager)")]
     [SerializeField] AudioSource ambience;
+    [SerializeField] float ambienceFadeOutSeconds = 1.5f;   // เสียงพื้นหลังเฟดออกตอนเริ่มฉากจบ
 
     TaskManager tasks;
     bool potGhostTriggered;
@@ -111,6 +116,9 @@ public class Chapter2Director : MonoBehaviour
             ghost.ChaseStarted += OnGhostChaseStarted;
             ghost.GazeStarted += OnGhostGazeStarted;
         }
+
+        // เสียงพื้นหลังเริ่มพร้อมคัทซีนเปิดเรื่อง (เล่นต่อเนื่องเข้าสู่เกม ปิดตอนฉากจบ)
+        if (ambience != null && !ambience.isPlaying) ambience.Play();
 
         if (cutscene != null && openingClip != null)
             cutscene.Play(openingClip, BeginGameplay, true, true, false);
@@ -190,6 +198,7 @@ public class Chapter2Director : MonoBehaviour
 
         // เก็บหม้อดินครั้งแรก: ผีโผล่แถวจุดเก็บหม้อ หันคอตามผู้เล่น พอเดินห่างถึงเริ่มไล่
         if (ghost != null) ghost.AppearAt(potSpawnPosition);
+        if (tension != null) tension.Begin();
     }
 
     void OnGhostGazeStarted()
@@ -235,7 +244,25 @@ public class Chapter2Director : MonoBehaviour
     {
         if (endingStarted) return;
         endingStarted = true;
+        if (tension != null)
+        {
+            tension.End();
+            tension.SetDuckEnabled(false);   // กันชนกับการเฟดเสียงพื้นหลังด้านล่าง
+        }
+        if (ambience != null) StartCoroutine(FadeOutAndStop(ambience, ambienceFadeOutSeconds));
         StartCoroutine(EndingRoutine());
+    }
+
+    IEnumerator FadeOutAndStop(AudioSource source, float seconds)
+    {
+        float start = source.volume;
+        for (float t = 0f; t < seconds; t += Time.unscaledDeltaTime)
+        {
+            source.volume = Mathf.Lerp(start, 0f, t / seconds);
+            yield return null;
+        }
+        source.Stop();
+        source.volume = start;   // คืนค่าเดิมเผื่อเล่นใหม่
     }
 
     IEnumerator EndingRoutine()

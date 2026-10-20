@@ -48,6 +48,15 @@ public class GhostController : MonoBehaviour
     [SerializeField] float appearMinHold = 1.2f;
     [SerializeField] float appearMaxHold = 20f;      // กันค้าง: ถ้าผู้เล่นยืนนิ่งนานเกินนี้ก็ไล่เลย
 
+    [Header("หันแค่คอ/หัว ตามผู้เล่น (ตอน Appear)")]
+    [Tooltip("ลากกระดูกคอหรือหัวจากโมเดล (rig > ... > Neck/Head) ใส่ ถ้าว่าง = หมุนทั้งตัวเหมือนเดิม")]
+    [SerializeField] Transform headBone;
+    [Tooltip("แกนของกระดูกที่ชี้ไปทางหน้าผี (ในพิกัดของกระดูก) ปกติ Z = (0,0,1) ถ้าหมุนผิดทิศลอง (0,1,0) หรือ (1,0,0)")]
+    [SerializeField] Vector3 headForwardAxis = new Vector3(0f, 0f, 1f);
+    [Tooltip("หันหัวได้สูงสุดกี่องศาจากทิศหน้าลำตัว")]
+    [SerializeField] float neckMaxAngle = 85f;
+    [SerializeField] float headTurnSpeed = 6f;
+
     [Header("Chase")]
     [SerializeField] float chaseSpeed = 4.2f;
     [SerializeField] float stunSeconds = 2f;
@@ -56,6 +65,7 @@ public class GhostController : MonoBehaviour
     [SerializeField] string walkParam = "Walk";
     [SerializeField] string runParam = "Run";
     [SerializeField] string stunParam = "Stunned";
+    [SerializeField] string scareParam = "Scare";      // Bool ท่าจั๊มป์สแคร์ในเกม (ไม่มีใน Animator ก็ข้ามเอง)
 
     [Header("Sounds (ไม่ใส่ก็ได้)")]
     [SerializeField] AudioSource sfx;
@@ -181,6 +191,9 @@ public class GhostController : MonoBehaviour
         }
     }
 
+    /// <summary>ตำแหน่งหัว/ตาของผี (ใช้เล็งกล้องตอนจั๊มป์สแคร์)</summary>
+    public Vector3 EyePosition { get { return EyePos; } }
+
     Vector3 EyePos
     {
         get { return eyePoint != null ? eyePoint.position : transform.position + Vector3.up * 1.5f; }
@@ -198,6 +211,7 @@ public class GhostController : MonoBehaviour
         gazeTimer = 0f;
         wasStaring = false;
         gazeWarnCooldown = 0f;
+        SetAnim(scareParam, false);
         if (gazeWarningLoop != null) gazeWarningLoop.Stop();
         wanderWait = 0f;
         lookAtPlayerIK = false;
@@ -275,6 +289,7 @@ public class GhostController : MonoBehaviour
 
     void BeginAppear(Transform pl)
     {
+        SetAnim(scareParam, false);
         // หันหน้าหาผู้เล่นทันที
         Vector3 look = pl.position - transform.position; look.y = 0f;
         if (look.sqrMagnitude > 0.01f) transform.rotation = Quaternion.LookRotation(look);
@@ -330,6 +345,38 @@ public class GhostController : MonoBehaviour
     }
 
     /// <summary>หยุดทุกอย่าง (ตอน Game Over)</summary>
+    /// <summary>
+    /// จั๊มป์สแคร์ในเกม: วางผีตรงหน้ากล้องผู้เล่นในระยะ distance เมตร หันหน้าหาผู้เล่น เล่นท่า Scare
+    /// (เรียกหลัง Freeze) ผีจะถูกวางกลับด้วย StartWander / AppearInFrontOfPlayer / AppearAt ตอนผู้เล่นฟื้น
+    /// </summary>
+    public void PrepareJumpscare(Transform cam, float distance)
+    {
+        Transform pl = Player;
+        if (pl == null || cam == null) return;
+
+        Vector3 fwd = cam.forward; fwd.y = 0f;
+        if (fwd.sqrMagnitude < 0.01f) fwd = pl.forward;
+        fwd.Normalize();
+
+        Vector3 pos = pl.position + fwd * distance;
+        pos.y = transform.position.y;
+        if (NavMesh.SamplePosition(pos, out NavMeshHit hit, 2.5f, NavMesh.AllAreas))
+            pos = hit.position;
+
+        if (agent != null) agent.enabled = false;    // ให้ย้ายตำแหน่งตรง ๆ ได้
+        transform.position = pos;
+
+        Vector3 look = pl.position - pos; look.y = 0f;
+        if (look.sqrMagnitude > 0.01f) transform.rotation = Quaternion.LookRotation(look);
+
+        SetAnim(stunParam, false);
+        SetAnim(walkParam, false);
+        SetAnim(runParam, false);
+        SetAnim(scareParam, true);
+        lookAtPlayerIK = true;
+        if (sfx != null && lungeSound != null) sfx.PlayOneShot(lungeSound);
+    }
+
     public void Freeze()
     {
         StopAllCoroutines();
@@ -492,9 +539,9 @@ public class GhostController : MonoBehaviour
     {
         appearTimer += Time.deltaTime;
 
-        // หัน/ตัวหันตามผู้เล่น
+        // หันตัวตามผู้เล่น (ถ้ามี Head Bone จะหันแค่คอ ตัวอยู่กับที่)
         Vector3 look = Player.position - transform.position; look.y = 0f;
-        if (look.sqrMagnitude > 0.01f)
+        if (headBone == null && look.sqrMagnitude > 0.01f)
         {
             Quaternion target = Quaternion.LookRotation(look);
             transform.rotation = Quaternion.Slerp(transform.rotation, target, appearHeadTurnSpeed * Time.deltaTime);
@@ -576,6 +623,37 @@ public class GhostController : MonoBehaviour
     {
         if (animator != null && !string.IsNullOrEmpty(param) && animParams.Contains(param))
             animator.SetBool(param, value);
+    }
+
+    float headBlend;
+    Vector3 headDir;
+    bool headInit;
+
+    // หมุนแค่กระดูกคอ/หัวให้หันหน้าหาผู้เล่น (ทำหลัง Animator เพื่อไม่ถูกทับ)
+    void LateUpdate()
+    {
+        if (headBone == null || Player == null) return;
+
+        float target = (lookAtPlayerIK && CurrentMode == Mode.Appear) ? 1f : 0f;
+        headBlend = Mathf.MoveTowards(headBlend, target, Time.deltaTime * 3f);
+        if (headBlend <= 0f) { headInit = false; return; }
+
+        Transform cam = PlayerControl.CameraTransform;
+        Vector3 eye = cam != null ? cam.position : Player.position + Vector3.up * 1.6f;
+        Vector3 want = (eye - headBone.position).normalized;
+
+        // จำกัดมุมคอ ไม่ให้บิดเกินจากทิศหน้าลำตัว
+        Vector3 bodyFwd = transform.forward;
+        Vector3 limited = Vector3.RotateTowards(bodyFwd, want, neckMaxAngle * Mathf.Deg2Rad, 0f);
+
+        Vector3 axis = headForwardAxis.sqrMagnitude < 0.0001f ? Vector3.forward : headForwardAxis.normalized;
+        Vector3 currentFwd = headBone.TransformDirection(axis);
+
+        if (!headInit) { headDir = currentFwd; headInit = true; }
+        headDir = Vector3.Slerp(headDir, limited, 1f - Mathf.Exp(-headTurnSpeed * Time.deltaTime));
+
+        Quaternion delta = Quaternion.FromToRotation(currentFwd, headDir);
+        headBone.rotation = Quaternion.Slerp(Quaternion.identity, delta, headBlend) * headBone.rotation;
     }
 
     // เปิด "IK Pass" ที่ Layer ใน Animator Controller ถ้าอยากให้หัวหันตามด้วย IK (ไม่เปิดก็ไม่เป็นไร)

@@ -17,5 +17,7 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: 89818d42edfe8054797cb7d5555caccd, type: 3}
   modelPrefab: {fileID: 3661206598803448704, guid: 5cfb0e0d163df5544bf1c4f75b8c0ba1, type: 3}
   description: 
-  detailCard: {fileID: 21300000, guid: efbb98dddddef0a4cb61e9bf8fe357e6, type: 3}
-  pickupSound: {fileID: 0}
+  detailCard: {fileID: 21300000, guid: 9ce2f3a613fc91e49b9a8fd9be74e909, type: 3}
+  viewScale: 1
+  viewEuler: {x: 0, y: 0, z: 0}
+  pickupSound: {fileID: 8300000, guid: 8800bd67b903bfc42bbb813313a3d9cc, type: 3}

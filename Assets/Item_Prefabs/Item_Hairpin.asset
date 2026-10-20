@@ -20,4 +20,4 @@ MonoBehaviour:
   detailCard: {fileID: 21300000, guid: 2977b1efe7399384cadcd70aef4ecb04, type: 3}
   viewScale: 1.2
   viewEuler: {x: 0, y: 0, z: 0}
-  pickupSound: {fileID: 0}
+  pickupSound: {fileID: 8300000, guid: 8800bd67b903bfc42bbb813313a3d9cc, type: 3}

@@ -30,6 +30,10 @@ public class GameOverManager : MonoBehaviour
     [SerializeField] AudioSource sfx;
     [SerializeField] AudioClip jumpscareSting;
 
+    [Header("จั๊มป์สแคร์ในเกม (ไม่ใช้วิดีโอ)")]
+    [Tooltip("ใส่ GhostJumpscare = ใช้จั๊มป์สแคร์ในเกม  เว้นว่าง = ใช้วิดีโอเดิม")]
+    [SerializeField] GhostJumpscare inGameJumpscare;
+
     bool busy;
     bool usedJumpscare;
 
@@ -69,7 +73,11 @@ public class GameOverManager : MonoBehaviour
 
         PlayerControl.Lock(false);
 
-        if (jumpscare && cutscene != null)
+        if (jumpscare && inGameJumpscare != null)
+        {
+            StartCoroutine(InGameJumpscareRoutine());
+        }
+        else if (jumpscare && cutscene != null)
         {
             if (sfx != null && jumpscareSting != null) sfx.PlayOneShot(jumpscareSting);
             cutscene.Play(jumpscareClip, ShowGameOver, false, false, true);
@@ -78,6 +86,14 @@ public class GameOverManager : MonoBehaviour
         {
             StartCoroutine(SanityRoutine());
         }
+    }
+
+    IEnumerator InGameJumpscareRoutine()
+    {
+        yield return inGameJumpscare.Play();
+        if (fader != null) yield return fader.FadeToBlack();
+        inGameJumpscare.Restore();
+        ShowGameOver();
     }
 
     IEnumerator SanityRoutine()

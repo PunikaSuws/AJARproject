@@ -18,4 +18,6 @@ MonoBehaviour:
   modelPrefab: {fileID: 6417418707776310053, guid: 543be570a49fdee49a8fdd05d3f2b521, type: 3}
   description: 
   detailCard: {fileID: 21300000, guid: 93cca539cb2c76f4dbb8c9bbf9eb7e36, type: 3}
-  pickupSound: {fileID: 0}
+  viewScale: 1
+  viewEuler: {x: 0, y: 0, z: 0}
+  pickupSound: {fileID: 8300000, guid: 8800bd67b903bfc42bbb813313a3d9cc, type: 3}

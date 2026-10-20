@@ -107,8 +107,33 @@ public class ChapterEndTrigger : MonoBehaviour
         while (!done)
             yield return null;
 
+        yield return FadeVideoImageToBlack();
+
         // 4) ไป Chapter 2 อัตโนมัติ
         LoadNext();
+    }
+
+    IEnumerator FadeVideoImageToBlack()
+    {
+        Color color = endVideoImage.color;
+        float startAlpha = color.a;
+
+        if (fadeDuration <= 0f)
+        {
+            color.a = 0f;
+            endVideoImage.color = color;
+            yield break;
+        }
+
+        for (float t = 0f; t < fadeDuration; t += Time.unscaledDeltaTime)
+        {
+            color.a = Mathf.Lerp(startAlpha, 0f, t / fadeDuration);
+            endVideoImage.color = color;
+            yield return null;
+        }
+
+        color.a = 0f;
+        endVideoImage.color = color;
     }
 
     void LoadNext()

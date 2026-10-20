@@ -1,8 +1,9 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// ค่าสติผู้เล่น: ผีกำลังไล่แล้วอยู่ใกล้ = สติลดเร็วตามระยะ ถึง 0 = Game Over (จอดำ -> หน้า Game Over)
+/// ค่าสติผู้เล่น: ผีไล่หรือเดินเตร็ดเตร่อยู่ใกล้ = สติลดตามระยะ (ตอนไล่เร็วกว่า) ถึง 0 = Game Over (จอดำ -> หน้า Game Over)
 /// ไม่มีผีอยู่ใกล้ = ฟื้นช้า ๆ ใส่ที่ Managers 1 ตัว
 /// </summary>
 public class SanityManager : MonoBehaviour
@@ -17,6 +18,13 @@ public class SanityManager : MonoBehaviour
     [SerializeField] float maxDrainPerSecond = 35f;    // ลด/วินาที ตอนผีชิดตัว (ก่อนคูณ)
     [SerializeField] float catchMultiplier = 2.5f;     // ผีประชิดตัวแล้ว คูณเพิ่ม
 
+    [Header("ผีเดินเตร็ดเตร่ (Wander) ก็ทำให้สติลดได้ แต่ช้ากว่าตอนไล่")]
+    [SerializeField] bool drainWhileWander = true;
+    [SerializeField] float wanderDrainRange = 10f;         // ผีเดินเตร่อยู่ใกล้กว่านี้ถึงเริ่มลด
+    [SerializeField] float wanderMaxDrainPerSecond = 6f;   // ลด/วินาที ตอนผีเดินเตร่ใกล้สุด
+    [Tooltip("ติ๊ก = ลดเฉพาะตอนผู้เล่นมองเห็นผี (ไม่มีกำแพงบัง)")]
+    [SerializeField] bool wanderNeedsLineOfSight = false;
+
     [Header("การฟื้น")]
     [SerializeField] float recoverDelay = 2.5f;
     [SerializeField] float recoverPerSecond = 6f;
@@ -24,6 +32,10 @@ public class SanityManager : MonoBehaviour
     [Header("UI / เสียง (ไม่ใส่ก็ได้)")]
     [SerializeField] CanvasGroup vignette;             // Image สีแดงเข้มขอบจอ ยิ่งสติต่ำยิ่งชัด
     [SerializeField] Image barFill;                    // Image Type = Filled
+    [Tooltip("แสดงค่าสติเป็นตัวเลข (TextMeshPro) ไม่ใส่ก็ได้")]
+    [SerializeField] TMP_Text valueText;
+    [Tooltip("{0} = ค่าสติ 0-100  เช่น  สติ {0}  หรือ  {0}%")]
+    [SerializeField] string valueFormat = "สติ {0}";
     [SerializeField] AudioSource heartbeat;            // เสียงหัวใจเต้น (Loop)
 
     public float Sanity { get; private set; }
@@ -54,13 +66,22 @@ public class SanityManager : MonoBehaviour
         }
 
         float rate = 0f;
-        if (ghost != null && ghost.gameObject.activeInHierarchy && ghost.CurrentMode == GhostController.Mode.Chase)
+        if (ghost != null && ghost.gameObject.activeInHierarchy)
         {
             float d = ghost.DistanceToPlayer;
-            if (d < drainRange)
+
+            if (ghost.CurrentMode == GhostController.Mode.Chase)
             {
-                rate = maxDrainPerSecond * (1f - d / drainRange);
-                if (d <= ghost.CatchDistance + 0.2f) rate *= catchMultiplier;
+                if (d < drainRange)
+                {
+                    rate = maxDrainPerSecond * (1f - d / drainRange);
+                    if (d <= ghost.CatchDistance + 0.2f) rate *= catchMultiplier;
+                }
+            }
+            else if (drainWhileWander && ghost.CurrentMode == GhostController.Mode.Wander)
+            {
+                if (d < wanderDrainRange && (!wanderNeedsLineOfSight || CanSeeGhost()))
+                    rate = wanderMaxDrainPerSecond * (1f - d / wanderDrainRange);
             }
         }
 
@@ -86,6 +107,19 @@ public class SanityManager : MonoBehaviour
         }
     }
 
+    bool CanSeeGhost()
+    {
+        Transform cam = PlayerControl.CameraTransform != null
+            ? PlayerControl.CameraTransform
+            : (Camera.main != null ? Camera.main.transform : null);
+        if (cam == null) return false;
+
+        Vector3 target = ghost.EyePosition;
+        if (Physics.Linecast(cam.position, target, out RaycastHit hit, ~0, QueryTriggerInteraction.Ignore))
+            return hit.transform.IsChildOf(ghost.transform);
+        return true;
+    }
+
     public void ResetSanity()
     {
         Sanity = maxSanity;
@@ -100,6 +134,8 @@ public class SanityManager : MonoBehaviour
 
         if (vignette != null) vignette.alpha = Mathf.Clamp01(lost * 1.3f);
         if (barFill != null) barFill.fillAmount = Sanity / maxSanity;
+        if (valueText != null)
+            valueText.text = string.Format(valueFormat, Mathf.CeilToInt(Sanity / maxSanity * 100f));
 
         if (heartbeat != null)
         {
