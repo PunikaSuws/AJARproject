@@ -10,7 +10,7 @@ public class ThrowablePickup : MonoBehaviour, IInteractable
 {
     [SerializeField] bool throwThisObject = true;
     [SerializeField] int ammoAmount = 1;
-    [SerializeField] string prompt = "[E] หยิบเพื่อขว้าง";
+    [SerializeField] string prompt = "[E] หยิบ";
     [SerializeField] AudioClip pickupSound;
 
     public string Prompt { get { return prompt; } }

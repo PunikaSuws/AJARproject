@@ -27,6 +27,10 @@ public class Chapter2Director : MonoBehaviour
     [Tooltip("หน้าจบเกม (Overlay) ถ้าเว้นว่างจะโหลด End Scene Name แทน")]
     [SerializeField] EndScreenUI endScreen;
     [SerializeField] string endSceneName = "EndScene";
+    [Tooltip("หลังจุดธูปเสร็จ รอกี่วินาทีก่อนขึ้นวิดีโอฉากจบ (ให้ผู้เล่นดูควันไฟธูป)")]
+    [SerializeField] float endingDelaySeconds = 5f;
+    [Tooltip("ติ๊ก = ตอนขึ้นหน้าจบเกม ค้างเฟรมสุดท้ายของวิดีโอไว้เป็นพื้นหลัง (ไม่ติ๊ก = จอดำ)")]
+    [SerializeField] bool holdEndingLastFrame = true;
 
     [Header("ผี")]
     [SerializeField] GhostController ghost;
@@ -237,10 +241,11 @@ public class Chapter2Director : MonoBehaviour
     IEnumerator EndingRoutine()
     {
         PlayerControl.Lock(false);
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(endingDelaySeconds);
+        PlayerControl.Unlock(false);   // ปลดคู่กับ Lock ด้านบน (VideoCutscene จะล็อกเองอีกชั้น)
 
         if (cutscene != null && endingClip != null)
-            cutscene.Play(endingClip, ShowEnd, false, true, true);
+            cutscene.Play(endingClip, ShowEnd, false, true, true, holdEndingLastFrame);
         else
             ShowEnd();
     }
@@ -252,6 +257,7 @@ public class Chapter2Director : MonoBehaviour
             endScreen.Show();
             return;
         }
+        Debug.LogWarning("Chapter2Director: ช่อง End Screen ว่าง จึงโหลดซีน '" + endSceneName + "' แทน (ลาก EndOverlay ที่มี EndScreenUI ใส่ช่อง End Screen)");
         Time.timeScale = 1f;
         SceneManager.LoadScene(endSceneName);
     }

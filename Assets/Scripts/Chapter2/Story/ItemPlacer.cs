@@ -7,7 +7,7 @@ using UnityEngine;
 /// </summary>
 public class ItemPlacer : MonoBehaviour, IInteractable
 {
-    [SerializeField] string prompt = "[E] วางของทั้งหมดลงบนพื้น";
+    [SerializeField] string prompt = "[E] วางของ";
     [SerializeField] string requiredTaskId = "place_items";
     [SerializeField] string progressTaskId = "place_items";
     [Tooltip("วัตถุที่ปิด Active ไว้ในฉาก จะถูกเปิดทีละชิ้นตามลำดับ (ควรมี 6 ชิ้น: ปิ่น หวี รูป1 รูป2 สมุด หม้อดิน)")]

@@ -19,6 +19,7 @@ public class VideoCutscene : MonoBehaviour
     public bool IsPlaying { get; private set; }
 
     Coroutine routine;
+    RenderTexture heldRt;   // ใช้ตอนค้างเฟรมสุดท้าย
 
     void Awake()
     {
@@ -35,6 +36,20 @@ public class VideoCutscene : MonoBehaviour
             rootGroup.interactable = false;
         }
         if (videoImage != null) videoImage.enabled = false;
+        ReleaseHeld();
+    }
+
+    void ReleaseHeld()
+    {
+        if (heldRt == null) return;
+        if (videoPlayer != null)
+        {
+            videoPlayer.Stop();
+            videoPlayer.targetTexture = null;
+        }
+        heldRt.Release();
+        Destroy(heldRt);
+        heldRt = null;
     }
 
     /// <param name="clip">วิดีโอ</param>
@@ -42,15 +57,17 @@ public class VideoCutscene : MonoBehaviour
     /// <param name="skippable">กด Space ข้ามได้</param>
     /// <param name="fadeInAtStart">เฟดจากดำเข้าหาวิดีโอ</param>
     /// <param name="keepBlackAtEnd">true = จบแล้วค้างจอดำ (ใช้กับจั๊มป์สแคร์/ฉากจบ) false = เฟดออกคืนเกม</param>
+    /// <param name="holdLastFrame">true = จบแล้วค้าง "เฟรมสุดท้ายของวิดีโอ" แทนจอดำ (ใช้คู่กับ keepBlackAtEnd = true) ซ่อนด้วย ClearBlack()</param>
     public void Play(VideoClip clip, Action onFinished, bool skippable = true,
-                     bool fadeInAtStart = true, bool keepBlackAtEnd = false)
+                     bool fadeInAtStart = true, bool keepBlackAtEnd = false, bool holdLastFrame = false)
     {
         if (routine != null) StopCoroutine(routine);
-        routine = StartCoroutine(PlayRoutine(clip, onFinished, skippable, fadeInAtStart, keepBlackAtEnd));
+        routine = StartCoroutine(PlayRoutine(clip, onFinished, skippable, fadeInAtStart, keepBlackAtEnd, holdLastFrame));
     }
 
-    IEnumerator PlayRoutine(VideoClip clip, Action onFinished, bool skippable, bool fadeIn, bool keepBlack)
+    IEnumerator PlayRoutine(VideoClip clip, Action onFinished, bool skippable, bool fadeIn, bool keepBlack, bool holdLast)
     {
+        ReleaseHeld();
         IsPlaying = true;
         GameState.Cutscene = true;
         PlayerControl.Lock(false);
@@ -123,11 +140,21 @@ public class VideoCutscene : MonoBehaviour
         }
 
         videoPlayer.loopPointReached -= handler;
-        videoPlayer.Stop();
-        videoImage.enabled = false;
-        videoPlayer.targetTexture = null;
-        rt.Release();
-        Destroy(rt);
+
+        if (holdLast && keepBlack)
+        {
+            // ค้างเฟรมสุดท้ายไว้บนจอ (หยุดเล่น ไม่ปิดภาพ) จนกว่าจะเรียก ClearBlack()
+            videoPlayer.Pause();
+            heldRt = rt;
+        }
+        else
+        {
+            videoPlayer.Stop();
+            videoImage.enabled = false;
+            videoPlayer.targetTexture = null;
+            rt.Release();
+            Destroy(rt);
+        }
 
         yield return Finish(onFinished, keepBlack);
     }
