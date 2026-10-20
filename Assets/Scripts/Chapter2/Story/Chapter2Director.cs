@@ -72,6 +72,7 @@ public class Chapter2Director : MonoBehaviour
 
     void Awake()
     {
+        ChapterProgress.Unlock(2);
         GameState.Reset();
         Time.timeScale = 1f;
         AudioListener.pause = false;

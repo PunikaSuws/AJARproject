@@ -131,6 +131,7 @@ GameObject:
   - component: {fileID: 11411988}
   - component: {fileID: 11411987}
   - component: {fileID: 11411986}
+  - component: {fileID: 11411989}
   m_Layer: 5
   m_Name: "\u0E40\u0E23\u0E34\u0E48\u0E21\u0E43\u0E2B\u0E21\u0E48"
   m_TagString: Untagged
@@ -239,6 +240,24 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 11411984}
   m_CullTransparentMesh: 1
+--- !u!114 &11411989
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 11411984}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b27bcd7279833ae4aa2e7e68582d845f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonJuice
+  hoverScale: 1.04
+  pressScale: 0.97
+  flickerAmount: 0.1
+  sfx: {fileID: 1131596067}
+  hoverClip: {fileID: 8300000, guid: 0d4ab8b6c7b4e40409bae82f92e7ce1c, type: 3}
+  clickClip: {fileID: 8300000, guid: f3184e64dbf5b8a4ab0378df02b9cece, type: 3}
 --- !u!1 &11617816 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4010502766932507561, guid: 209bba4f4dffbbc42823741349a103ea, type: 3}
@@ -1172,7 +1191,7 @@ VideoPlayer:
   m_TargetAudioSources:
   - {fileID: 0}
   m_DirectAudioVolumes:
-  - 0.7
+  - 0.4
   m_Url: 
   m_EnabledAudioTracks: 01
   m_DirectAudioMutes: 00
@@ -12886,6 +12905,7 @@ GameObject:
   - component: {fileID: 674172805}
   - component: {fileID: 674172804}
   - component: {fileID: 674172803}
+  - component: {fileID: 674172806}
   m_Layer: 5
   m_Name: "\u0E40\u0E25\u0E48\u0E19\u0E15\u0E48\u0E2D"
   m_TagString: Untagged
@@ -12994,6 +13014,24 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 674172801}
   m_CullTransparentMesh: 1
+--- !u!114 &674172806
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 674172801}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b27bcd7279833ae4aa2e7e68582d845f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonJuice
+  hoverScale: 1.04
+  pressScale: 0.97
+  flickerAmount: 0.1
+  sfx: {fileID: 1131596067}
+  hoverClip: {fileID: 8300000, guid: 0d4ab8b6c7b4e40409bae82f92e7ce1c, type: 3}
+  clickClip: {fileID: 8300000, guid: f3184e64dbf5b8a4ab0378df02b9cece, type: 3}
 --- !u!1 &675208361
 GameObject:
   m_ObjectHideFlags: 0
@@ -24949,6 +24987,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1131596066}
   - component: {fileID: 1131596065}
+  - component: {fileID: 1131596067}
   m_Layer: 0
   m_Name: UIManager
   m_TagString: Untagged
@@ -24997,6 +25036,103 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!82 &1131596067
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1131596064}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1001 &1133063725
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -32471,6 +32607,7 @@ GameObject:
   - component: {fileID: 1276404611}
   - component: {fileID: 1276404610}
   - component: {fileID: 1276404609}
+  - component: {fileID: 1276404612}
   m_Layer: 5
   m_Name: "\u0E40\u0E21\u0E19\u0E39\u0E2B\u0E25\u0E31\u0E01"
   m_TagString: Untagged
@@ -32579,6 +32716,24 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1276404607}
   m_CullTransparentMesh: 1
+--- !u!114 &1276404612
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1276404607}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b27bcd7279833ae4aa2e7e68582d845f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonJuice
+  hoverScale: 1.04
+  pressScale: 0.97
+  flickerAmount: 0.1
+  sfx: {fileID: 1131596067}
+  hoverClip: {fileID: 8300000, guid: 0d4ab8b6c7b4e40409bae82f92e7ce1c, type: 3}
+  clickClip: {fileID: 8300000, guid: f3184e64dbf5b8a4ab0378df02b9cece, type: 3}
 --- !u!1 &1280882268 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 912331390491862288, guid: 209bba4f4dffbbc42823741349a103ea, type: 3}

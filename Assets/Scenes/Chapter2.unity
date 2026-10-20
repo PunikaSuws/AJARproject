@@ -1434,6 +1434,7 @@ GameObject:
   - component: {fileID: 85791616}
   - component: {fileID: 85791615}
   - component: {fileID: 85791614}
+  - component: {fileID: 85791617}
   m_Layer: 5
   m_Name: "\u0E40\u0E21\u0E19\u0E39\u0E2B\u0E25\u0E31\u0E01"
   m_TagString: Untagged
@@ -1542,6 +1543,24 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 85791612}
   m_CullTransparentMesh: 1
+--- !u!114 &85791617
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 85791612}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b27bcd7279833ae4aa2e7e68582d845f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonJuice
+  hoverScale: 1.04
+  pressScale: 0.97
+  flickerAmount: 0.1
+  sfx: {fileID: 2072156340}
+  hoverClip: {fileID: 8300000, guid: 0d4ab8b6c7b4e40409bae82f92e7ce1c, type: 3}
+  clickClip: {fileID: 8300000, guid: f3184e64dbf5b8a4ab0378df02b9cece, type: 3}
 --- !u!1 &106106211
 GameObject:
   m_ObjectHideFlags: 0
@@ -5433,6 +5452,7 @@ GameObject:
   - component: {fileID: 276058660}
   - component: {fileID: 276058659}
   - component: {fileID: 276058658}
+  - component: {fileID: 276058661}
   m_Layer: 5
   m_Name: "\u0E25\u0E2D\u0E07\u0E2D\u0E35\u0E01\u0E04\u0E23\u0E31\u0E49\u0E07"
   m_TagString: Untagged
@@ -5541,6 +5561,24 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 276058656}
   m_CullTransparentMesh: 1
+--- !u!114 &276058661
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 276058656}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b27bcd7279833ae4aa2e7e68582d845f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonJuice
+  hoverScale: 1.04
+  pressScale: 0.97
+  flickerAmount: 0.1
+  sfx: {fileID: 2072156340}
+  hoverClip: {fileID: 8300000, guid: 0d4ab8b6c7b4e40409bae82f92e7ce1c, type: 3}
+  clickClip: {fileID: 8300000, guid: f3184e64dbf5b8a4ab0378df02b9cece, type: 3}
 --- !u!1001 &276521772
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9624,6 +9662,7 @@ GameObject:
   - component: {fileID: 492725763}
   - component: {fileID: 492725762}
   - component: {fileID: 492725761}
+  - component: {fileID: 492725764}
   m_Layer: 5
   m_Name: "\u0E40\u0E23\u0E34\u0E48\u0E21\u0E43\u0E2B\u0E21\u0E48"
   m_TagString: Untagged
@@ -9732,6 +9771,24 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 492725759}
   m_CullTransparentMesh: 1
+--- !u!114 &492725764
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 492725759}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b27bcd7279833ae4aa2e7e68582d845f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonJuice
+  hoverScale: 1.04
+  pressScale: 0.97
+  flickerAmount: 0.1
+  sfx: {fileID: 2072156340}
+  hoverClip: {fileID: 8300000, guid: 0d4ab8b6c7b4e40409bae82f92e7ce1c, type: 3}
+  clickClip: {fileID: 8300000, guid: f3184e64dbf5b8a4ab0378df02b9cece, type: 3}
 --- !u!1001 &493067734
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -25677,7 +25734,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Chapter2Director
   cutscene: {fileID: 1330675796}
   openingClip: {fileID: 32900000, guid: 77707a171d3ad444d91f7c227541a2b8, type: 3}
-  endingClip: {fileID: 32900000, guid: bcfb43b8db3c3a84e8ba5e7b04db1f6a, type: 3}
+  endingClip: {fileID: 32900000, guid: 1c5627b3a1fcc264e890afa804b8ec8b, type: 3}
   endScreen: {fileID: 2072156339}
   endSceneName: EndScene
   endingDelaySeconds: 5
@@ -39402,6 +39459,7 @@ GameObject:
   - component: {fileID: 1213184362}
   - component: {fileID: 1213184361}
   - component: {fileID: 1213184360}
+  - component: {fileID: 1213184363}
   m_Layer: 5
   m_Name: "\u0E40\u0E21\u0E19\u0E39\u0E2B\u0E25\u0E31\u0E01"
   m_TagString: Untagged
@@ -39510,6 +39568,24 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1213184358}
   m_CullTransparentMesh: 1
+--- !u!114 &1213184363
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1213184358}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b27bcd7279833ae4aa2e7e68582d845f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonJuice
+  hoverScale: 1.04
+  pressScale: 0.97
+  flickerAmount: 0.1
+  sfx: {fileID: 2072156340}
+  hoverClip: {fileID: 8300000, guid: 0d4ab8b6c7b4e40409bae82f92e7ce1c, type: 3}
+  clickClip: {fileID: 8300000, guid: f3184e64dbf5b8a4ab0378df02b9cece, type: 3}
 --- !u!1001 &1227123728
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -57994,6 +58070,7 @@ GameObject:
   - component: {fileID: 1752559700}
   - component: {fileID: 1752559699}
   - component: {fileID: 1752559698}
+  - component: {fileID: 1752559701}
   m_Layer: 5
   m_Name: "\u0E40\u0E25\u0E48\u0E19\u0E15\u0E48\u0E2D"
   m_TagString: Untagged
@@ -58102,6 +58179,24 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1752559696}
   m_CullTransparentMesh: 1
+--- !u!114 &1752559701
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1752559696}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b27bcd7279833ae4aa2e7e68582d845f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonJuice
+  hoverScale: 1.04
+  pressScale: 0.97
+  flickerAmount: 0.1
+  sfx: {fileID: 2072156340}
+  hoverClip: {fileID: 8300000, guid: 0d4ab8b6c7b4e40409bae82f92e7ce1c, type: 3}
+  clickClip: {fileID: 8300000, guid: f3184e64dbf5b8a4ab0378df02b9cece, type: 3}
 --- !u!1001 &1752970726
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -61237,6 +61332,7 @@ GameObject:
   - component: {fileID: 1933355758}
   - component: {fileID: 1933355757}
   - component: {fileID: 1933355756}
+  - component: {fileID: 1933355759}
   m_Layer: 5
   m_Name: "\u0E40\u0E21\u0E19\u0E39\u0E2B\u0E25\u0E31\u0E01"
   m_TagString: Untagged
@@ -61345,6 +61441,24 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1933355754}
   m_CullTransparentMesh: 1
+--- !u!114 &1933355759
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1933355754}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b27bcd7279833ae4aa2e7e68582d845f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonJuice
+  hoverScale: 1.04
+  pressScale: 0.97
+  flickerAmount: 0.1
+  sfx: {fileID: 2072156340}
+  hoverClip: {fileID: 8300000, guid: 0d4ab8b6c7b4e40409bae82f92e7ce1c, type: 3}
+  clickClip: {fileID: 8300000, guid: f3184e64dbf5b8a4ab0378df02b9cece, type: 3}
 --- !u!1 &1936386195
 GameObject:
   m_ObjectHideFlags: 0
@@ -64381,6 +64495,7 @@ GameObject:
   - component: {fileID: 2072156337}
   - component: {fileID: 2072156338}
   - component: {fileID: 2072156339}
+  - component: {fileID: 2072156340}
   m_Layer: 0
   m_Name: UIManager
   m_TagString: Untagged
@@ -64467,6 +64582,103 @@ MonoBehaviour:
   panel: {fileID: 1109277449}
   menuButton: {fileID: 1213184360}
   mainMenuScene: MainMenu
+--- !u!82 &2072156340
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2072156335}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &2076242812
 GameObject:
   m_ObjectHideFlags: 0
