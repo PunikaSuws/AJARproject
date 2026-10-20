@@ -4,7 +4,8 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class Projectile : MonoBehaviour
 {
-    [SerializeField] string progressTaskId = "throw_ghost";
+    [Tooltip("เว้นว่าง = ขว้างแล้วไม่นับ Task (Task ขว้างผีจะค้างจนกว่าผู้เล่นเข้าห้องพระ)")]
+    [SerializeField] string progressTaskId = "";
     [SerializeField] float lifetime = 6f;
     [SerializeField] AudioClip hitGhostSound;
     [SerializeField] AudioClip hitOtherSound;
