@@ -4412,7 +4412,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.73899364, b: 0.73899364, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 1
   m_Range: 1.9613352
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
