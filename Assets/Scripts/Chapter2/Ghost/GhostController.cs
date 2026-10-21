@@ -629,7 +629,7 @@ public class GhostController : MonoBehaviour
     Vector3 headDir;
     bool headInit;
 
-    // หมุนแค่กระดูกคอ/หัวให้หันหน้าหาผู้เล่น (ทำหลัง Animator เพื่อไม่ถูกทับ)
+
     void LateUpdate()
     {
         if (headBone == null || Player == null) return;
@@ -656,7 +656,7 @@ public class GhostController : MonoBehaviour
         headBone.rotation = Quaternion.Slerp(Quaternion.identity, delta, headBlend) * headBone.rotation;
     }
 
-    // เปิด "IK Pass" ที่ Layer ใน Animator Controller ถ้าอยากให้หัวหันตามด้วย IK (ไม่เปิดก็ไม่เป็นไร)
+    
     void OnAnimatorIK(int layerIndex)
     {
         if (animator == null || Player == null) return;
