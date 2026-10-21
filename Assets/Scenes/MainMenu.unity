@@ -1472,9 +1472,9 @@ MonoBehaviour:
   hoverScale: 1.04
   pressScale: 0.97
   flickerAmount: 0.1
-  sfx: {fileID: 0}
-  hoverClip: {fileID: 0}
-  clickClip: {fileID: 0}
+  sfx: {fileID: 526720154}
+  hoverClip: {fileID: 8300000, guid: 0d4ab8b6c7b4e40409bae82f92e7ce1c, type: 3}
+  clickClip: {fileID: 8300000, guid: f3184e64dbf5b8a4ab0378df02b9cece, type: 3}
 --- !u!1 &1238538358
 GameObject:
   m_ObjectHideFlags: 0
