@@ -14,10 +14,10 @@ OcclusionCullingSettings:
 RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 10
-  m_Fog: 0
-  m_FogColor: {r: 0.05490196, g: 0.08235294, b: 0.13333334, a: 1}
+  m_Fog: 1
+  m_FogColor: {r: 0.7322297, g: 0.7599116, b: 0.8113208, a: 1}
   m_FogMode: 3
-  m_FogDensity: 0.02
+  m_FogDensity: 0.005
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
   m_AmbientSkyColor: {r: 0.05882353, g: 0.08627451, b: 0.14901961, a: 1}
@@ -2454,8 +2454,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 2.0976868, y: 1.4865704, z: 4.092102}
-  m_Center: {x: 0.06944275, y: 0.24328518, z: 0.21517944}
+  m_Size: {x: 2.36969, y: 1.4865704, z: 4.092102}
+  m_Center: {x: -0.06655884, y: 0.24328518, z: 0.21517944}
 --- !u!4 &145899029
 Transform:
   m_ObjectHideFlags: 0
@@ -48110,7 +48110,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1457530100
 MonoBehaviour:
   m_ObjectHideFlags: 0
