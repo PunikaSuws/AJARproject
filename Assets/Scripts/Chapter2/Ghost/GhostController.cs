@@ -15,7 +15,7 @@ public class GhostController : MonoBehaviour
 {
     public enum Mode { Inactive, Wander, Appear, Chase, Stunned, Lunging }
 
-    [Header("อ้างอิง (ว่างไว้ = หาเอง)")]
+    [Header("อ้างอิง")]
     [SerializeField] Transform eyePoint;            // จุดที่ใช้เช็คว่าถูกจ้อง (หัวผี)
     [SerializeField] Animator animator;
 
@@ -24,7 +24,7 @@ public class GhostController : MonoBehaviour
     [SerializeField] float wanderSpeed = 1.3f;
     [SerializeField] Vector2 wanderPause = new Vector2(1.5f, 4f);
 
-    [Header("Gaze (จ้องผี)")]
+    [Header("Gaze")]
     [SerializeField] float gazeSeconds = 3f;
     [SerializeField] float gazeAngle = 30f;          // ครึ่งมุมของกรวยสายตา
     [SerializeField] float gazeMaxDistance = 30f;
@@ -32,12 +32,12 @@ public class GhostController : MonoBehaviour
     [SerializeField] LayerMask gazeBlockMask = ~0;
     [SerializeField] AudioSource gazeWarningLoop;    // เสียงหัวใจ/ความตึงเครียด ค่อย ๆ ดังขึ้นตอนจ้อง (ไม่ใส่ก็ได้)
 
-    [Header("Lunge (พุ่งใส่ตอนถูกจ้อง)")]
+    [Header("Lunge")]
     [SerializeField] float lungeTurnSeconds = 0.6f;
     [SerializeField] float lungeSpeed = 10f;
     [SerializeField] float catchDistance = 1.3f;
 
-    [Header("Appear (โผล่ตรงหน้า)")]
+    [Header("Appear")]
     [SerializeField] float appearDistance = 5f;
     [SerializeField] float appearHeadTurnSpeed = 6f;
     [Tooltip("โผล่แถวจุดหม้อดิน: ห่างผู้เล่นอย่างน้อยกี่เมตร")]
@@ -48,7 +48,7 @@ public class GhostController : MonoBehaviour
     [SerializeField] float appearMinHold = 1.2f;
     [SerializeField] float appearMaxHold = 20f;      // กันค้าง: ถ้าผู้เล่นยืนนิ่งนานเกินนี้ก็ไล่เลย
 
-    [Header("หันแค่คอ/หัว ตามผู้เล่น (ตอน Appear)")]
+    [Header("Head Turn")]
     [Tooltip("ลากกระดูกคอหรือหัวจากโมเดล (rig > ... > Neck/Head) ใส่ ถ้าว่าง = หมุนทั้งตัวเหมือนเดิม")]
     [SerializeField] Transform headBone;
     [Tooltip("แกนของกระดูกที่ชี้ไปทางหน้าผี (ในพิกัดของกระดูก) ปกติ Z = (0,0,1) ถ้าหมุนผิดทิศลอง (0,1,0) หรือ (1,0,0)")]
@@ -61,7 +61,7 @@ public class GhostController : MonoBehaviour
     [SerializeField] float chaseSpeed = 4.2f;
     [SerializeField] float stunSeconds = 2f;
 
-    [Header("Animator parameters (ชื่อ bool; ไม่มีใน Animator ก็ข้ามเอง)")]
+    [Header("Animator parameters")]
     [SerializeField] string walkParam = "Walk";
     [SerializeField] string runParam = "Run";
     [SerializeField] string stunParam = "Stunned";
