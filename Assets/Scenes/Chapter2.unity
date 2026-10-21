@@ -39020,11 +39020,11 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 150fe3d036d8f794fb21394f48b88846, type: 2}
     - target: {fileID: 114497868231759342, guid: 11aaea5348574644a9eb4f4504fcce3f, type: 3}
       propertyPath: jumpStrength
-      value: 2.5
+      value: 2.3
       objectReference: {fileID: 0}
     - target: {fileID: 114963311885979670, guid: 11aaea5348574644a9eb4f4504fcce3f, type: 3}
       propertyPath: runSpeed
-      value: 11
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 114963311885979670, guid: 11aaea5348574644a9eb4f4504fcce3f, type: 3}
       propertyPath: stepHeight
@@ -60354,7 +60354,7 @@ MonoBehaviour:
     m_Bits: 4294967295
   gazeWarningLoop: {fileID: 2135333649}
   lungeTurnSeconds: 0.6
-  lungeSpeed: 10
+  lungeSpeed: 12
   catchDistance: 1.3
   appearDistance: 5
   appearHeadTurnSpeed: 6
@@ -60367,7 +60367,7 @@ MonoBehaviour:
   headForwardAxis: {x: 0, y: 0, z: 1}
   neckMaxAngle: 85
   headTurnSpeed: 6
-  chaseSpeed: 4.2
+  chaseSpeed: 6
   stunSeconds: 2
   walkParam: Walk
   runParam: Run

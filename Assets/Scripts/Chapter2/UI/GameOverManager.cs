@@ -68,6 +68,8 @@ public class GameOverManager : MonoBehaviour
         GameState.GameOver = true;
         usedJumpscare = jumpscare;
 
+        if (SanityManager.Instance != null) SanityManager.Instance.DrainToZero();
+
         foreach (GhostController g in FindObjectsByType<GhostController>(FindObjectsSortMode.None))
             g.Freeze();
 

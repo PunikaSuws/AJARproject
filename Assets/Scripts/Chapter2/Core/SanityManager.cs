@@ -120,6 +120,14 @@ public class SanityManager : MonoBehaviour
         return true;
     }
 
+    /// <summary>เกมโอเวอร์ทุกแบบ: ค่าสติเหลือ 0 ทันที (ฟื้นกลับ 100 ตอนกดลองอีกครั้ง)</summary>
+    public void DrainToZero()
+    {
+        Sanity = 0f;
+        triggered = true;
+        UpdateUI();
+    }
+
     public void ResetSanity()
     {
         Sanity = maxSanity;
