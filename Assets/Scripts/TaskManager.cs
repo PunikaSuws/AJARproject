@@ -61,7 +61,7 @@ public class TaskManager : MonoBehaviour
         TaskData task = tasks.Find(t => t.id == id);
         if (task == null)
         {
-            Debug.LogWarning("ActivateTask: ไม่พบ Task id = " + id);
+            Debug.LogWarning("ActivateTask: cannot find Task id = " + id);
             return;
         }
         if (task.active || task.completed) return;
